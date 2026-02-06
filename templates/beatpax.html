@@ -4576,7 +4576,7 @@
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="profile-dropdown-header">
-                        <div class="profile-dropdown-name" id="profileDropdownName">{{ session.get('user_name', 'User') }}</div>
+                        <div class="profile-dropdown-name" id="profileDropdownName">{{ session.get('user_handle') or session.get('user_name', 'User') }}</div>
                     </div>
                     <a href="javascript:void(0)" class="profile-dropdown-item" onclick="openProfileModal()">
                         <i data-lucide="user-pen" class="lucide-icon"></i>
@@ -8398,8 +8398,8 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    const newName = `${data.first_name} ${data.surname}`;
-                    document.getElementById('profileDropdownName').textContent = newName;
+                    const displayName = data.username ? `@${data.username}` : `${data.first_name} ${data.surname}`;
+                    document.getElementById('profileDropdownName').textContent = displayName;
                     document.getElementById('profileCircle').textContent = data.first_name[0].toUpperCase();
                     showToast('Profile updated', 'success');
                     closeProfileModal();

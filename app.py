@@ -209,6 +209,7 @@ def register():
             session['authenticated'] = True
             session['user_id'] = new_user.id
             session['user_name'] = f"{new_user.first_name} {new_user.surname}"
+            session['user_handle'] = f"@{new_user.username}" if new_user.username else None
             session['session_id'] = str(uuid.uuid4())
 
             return redirect(url_for('beatpax'))
@@ -242,6 +243,7 @@ def login():
             session['authenticated'] = True
             session['user_id'] = user.id
             session['user_name'] = f"{user.first_name} {user.surname}"
+            session['user_handle'] = f"@{user.username}" if user.username else None
             session['session_id'] = str(uuid.uuid4())
             session['is_admin'] = user.is_admin or False
 
@@ -1905,6 +1907,7 @@ def update_profile():
         db.session.commit()
 
         session['user_name'] = f"{user.first_name} {user.surname}"
+        session['user_handle'] = f"@{user.username}" if user.username else None
 
         return jsonify({
             'first_name': user.first_name,
