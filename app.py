@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from functools import wraps
 from werkzeug.utils import secure_filename
 from PIL import Image
-from models import db, User, UserProfile, SoundPack, Beat, Wallet, Transaction, UserBeatLibrary, UserLikedTrack, CuratedPack, CuratedPackTrack
+from models import db, User, UserProfile, SoundPack, Beat, Wallet, Transaction, UserBeatLibrary, UserLikedTrack, CuratedPack, CuratedPackTrack, StemProject, StemFile
 import blob_storage
 
 load_dotenv()
@@ -276,7 +276,8 @@ def generate_share_code():
     """Generate a unique 8-character share code"""
     while True:
         code = secrets.token_urlsafe(6)[:8]
-        if not CuratedPack.query.filter_by(share_code=code).first():
+        if not CuratedPack.query.filter_by(share_code=code).first() and \
+           not StemProject.query.filter_by(share_code=code).first():
             return code
 
 # =============================================================================
@@ -1767,6 +1768,159 @@ def download_curated_pack(share_code):
         db.session.rollback()
         print(f"Error downloading curated pack: {e}")
         return jsonify({'error': 'Failed to download pack'}), 500
+
+
+# =============================================================================
+# Stems API Endpoints
+# =============================================================================
+
+@app.route('/api/stems', methods=['GET'])
+@login_required
+def get_stem_projects():
+    """Get user's stem projects"""
+    user_id = session.get('user_id')
+
+    try:
+        projects = StemProject.query.filter_by(
+            user_id=user_id, is_active=True
+        ).order_by(StemProject.created_at.desc()).all()
+
+        return jsonify({
+            'projects': [p.to_dict(include_files=True) for p in projects],
+            'count': len(projects)
+        })
+    except Exception as e:
+        print(f"Error fetching stem projects: {e}")
+        return jsonify({'error': 'Failed to fetch stem projects'}), 500
+
+
+@app.route('/api/stems', methods=['POST'])
+@login_required
+def create_stem_project():
+    """Create a new stem project"""
+    user_id = session.get('user_id')
+
+    try:
+        data = request.get_json()
+        name = data.get('name', '').strip()
+        if not name:
+            return jsonify({'error': 'Project name is required'}), 400
+
+        files_data = data.get('files', [])
+        if not files_data:
+            return jsonify({'error': 'At least one stem file is required'}), 400
+
+        project = StemProject(
+            user_id=user_id,
+            name=name,
+            description=data.get('description', '').strip() or None,
+            share_code=generate_share_code()
+        )
+        db.session.add(project)
+        db.session.flush()
+
+        for order, file_info in enumerate(files_data):
+            stem_file = StemFile(
+                stem_project_id=project.id,
+                file_name=file_info.get('file_name', ''),
+                audio_url=file_info.get('audio_url', ''),
+                file_size=file_info.get('file_size', 0),
+                stem_type=file_info.get('stem_type', 'other'),
+                track_order=order
+            )
+            db.session.add(stem_file)
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'project': project.to_dict(include_files=True),
+            'message': 'Stem project created!'
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating stem project: {e}")
+        return jsonify({'error': 'Failed to create stem project'}), 500
+
+
+@app.route('/api/stems/<int:project_id>', methods=['DELETE'])
+@login_required
+def delete_stem_project(project_id):
+    """Delete a stem project"""
+    user_id = session.get('user_id')
+
+    try:
+        project = StemProject.query.get(project_id)
+        if not project:
+            return jsonify({'error': 'Stem project not found'}), 404
+
+        if project.user_id != user_id:
+            return jsonify({'error': 'You can only delete your own projects'}), 403
+
+        project.is_active = False
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': 'Stem project deleted!'
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting stem project: {e}")
+        return jsonify({'error': 'Failed to delete stem project'}), 500
+
+
+@app.route('/api/stems/<int:project_id>/send-email', methods=['POST'])
+@login_required
+def stem_send_email(project_id):
+    """Generate mailto URL for sharing a stem project"""
+    user_id = session.get('user_id')
+
+    try:
+        project = StemProject.query.get(project_id)
+        if not project or not project.is_active:
+            return jsonify({'error': 'Stem project not found'}), 404
+
+        if project.user_id != user_id:
+            return jsonify({'error': 'You can only share your own projects'}), 403
+
+        data = request.get_json()
+        recipient_email = data.get('email', '').strip()
+        if not recipient_email:
+            return jsonify({'error': 'Recipient email is required'}), 400
+
+        share_url = f"{request.host_url.rstrip('/')}/stems/{project.share_code}"
+        subject = f"Check out my stems: {project.name}"
+        body = f"Hey! I wanted to share my stem project \"{project.name}\" with you.\n\nListen here: {share_url}\n\nSent via Beatpax"
+
+        import urllib.parse
+        mailto_url = f"mailto:{recipient_email}?subject={urllib.parse.quote(subject)}&body={urllib.parse.quote(body)}"
+
+        return jsonify({
+            'success': True,
+            'mailto_url': mailto_url
+        })
+    except Exception as e:
+        print(f"Error generating email for stem project: {e}")
+        return jsonify({'error': 'Failed to generate email'}), 500
+
+
+@app.route('/stems/<share_code>')
+def view_stem_project(share_code):
+    """Public page to view a shared stem project — redirects to home for MVP"""
+    try:
+        project = StemProject.query.filter_by(share_code=share_code, is_active=True).first()
+        if not project:
+            return redirect('/')
+
+        project.view_count += 1
+        db.session.commit()
+
+        return redirect('/')
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error viewing stem project: {e}")
+        return redirect('/')
 
 
 # Create database tables on app startup

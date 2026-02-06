@@ -3861,6 +3861,405 @@
             color: #ff4444;
         }
 
+        /* ============================================
+           STEMS SECTION
+           ============================================ */
+
+        .stems-project-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .stems-project-card {
+            background: #0d0d0d;
+            border: 1px solid #2d2d2d;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stems-project-card:hover {
+            border-color: #4a4a4a;
+            transform: translateY(-2px);
+        }
+
+        .stems-project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .stems-project-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .stems-project-desc {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .stems-project-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .stems-project-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .stems-project-stat .lucide-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .stems-project-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2d2d2d;
+        }
+
+        .stems-project-actions button {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 13px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .stems-project-actions .lucide-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .stems-project-actions .btn-share {
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            color: #fff;
+        }
+
+        .stems-project-actions .btn-share:hover {
+            background: #2d2d2d;
+        }
+
+        .stems-project-actions .btn-delete {
+            background: none;
+            border: 1px solid #2d2d2d;
+            color: #888;
+        }
+
+        .stems-project-actions .btn-delete:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        /* Stems Modal */
+        .stems-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 300;
+            display: none;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .stems-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .stems-modal-content {
+            width: 100%;
+            max-width: 600px;
+            background: #0d0d0d;
+            border: 1px solid #2d2d2d;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+
+        .stems-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .stems-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .stems-modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .stems-modal-close:hover {
+            color: #fff;
+        }
+
+        .stems-modal-body {
+            padding: 24px;
+        }
+
+        .stems-form-group {
+            margin-bottom: 20px;
+        }
+
+        .stems-form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ccc;
+            margin-bottom: 8px;
+        }
+
+        .stems-form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .stems-form-input:focus {
+            border-color: #4a4a4a;
+        }
+
+        .stems-form-input::placeholder {
+            color: #555;
+        }
+
+        .stems-upload-area {
+            border: 2px dashed #2d2d2d;
+            border-radius: 12px;
+            padding: 40px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stems-upload-area:hover {
+            border-color: #4a4a4a;
+            background: #0a0a0a;
+        }
+
+        .stems-upload-area.dragover {
+            border-color: #fff;
+            background: #1a1a1a;
+        }
+
+        .stems-upload-area .lucide-icon {
+            width: 40px;
+            height: 40px;
+            color: #555;
+            margin-bottom: 12px;
+        }
+
+        .stems-upload-area h4 {
+            font-size: 16px;
+            margin-bottom: 4px;
+            color: #ccc;
+        }
+
+        .stems-upload-area p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .stems-upload-area input[type="file"] {
+            display: none;
+        }
+
+        .stems-uploaded-files {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stems-uploaded-file {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 8px;
+        }
+
+        .stems-uploaded-file .file-icon {
+            width: 36px;
+            height: 36px;
+            background: #2d2d2d;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .stems-uploaded-file .file-icon .lucide-icon {
+            width: 18px;
+            height: 18px;
+            color: #888;
+        }
+
+        .stems-uploaded-file .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .stems-uploaded-file .file-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stems-uploaded-file .file-size {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .stems-uploaded-file .file-type-select {
+            padding: 6px 8px;
+            background: #0d0d0d;
+            border: 1px solid #2d2d2d;
+            border-radius: 6px;
+            color: #ccc;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .stems-uploaded-file .file-type-select:focus {
+            border-color: #4a4a4a;
+        }
+
+        .stems-uploaded-file .file-remove {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            padding: 6px;
+            flex-shrink: 0;
+        }
+
+        .stems-uploaded-file .file-remove:hover {
+            color: #ff4444;
+        }
+
+        .stems-uploaded-file .file-remove .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .stems-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #2d2d2d;
+        }
+
+        .stems-modal-footer button {
+            padding: 10px 24px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stems-modal-footer .btn-cancel {
+            background: none;
+            border: 1px solid #2d2d2d;
+            color: #888;
+        }
+
+        .stems-modal-footer .btn-cancel:hover {
+            background: #1a1a1a;
+            color: #fff;
+        }
+
+        .stems-modal-footer .btn-create {
+            background: #fff;
+            border: none;
+            color: #000;
+            font-weight: 600;
+        }
+
+        .stems-modal-footer .btn-create:hover {
+            opacity: 0.9;
+        }
+
+        .stems-modal-footer .btn-create:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        /* Stems Share Modal */
+        .stems-share-link-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .stems-share-link-row .stems-form-input {
+            flex: 1;
+        }
+
+        .stems-share-copy-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            color: #000;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: opacity 0.2s;
+        }
+
+        .stems-share-copy-btn:hover {
+            opacity: 0.9;
+        }
+
+        .stems-share-copy-btn .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
         /* Responsive sidebar */
         @media (max-width: 1024px) {
             .beatpax-sidebar {
@@ -4061,6 +4460,7 @@
             <div class="sidebar-nav-item" data-view="stems" onclick="switchSidebarView('stems')">
                 <i data-lucide="layers" class="lucide-icon"></i>
                 <span class="nav-label">Stems</span>
+                <span class="nav-count" id="stemsCount">0</span>
             </div>
             <div class="sidebar-divider"></div>
             <div class="sidebar-section-title">Library</div>
@@ -4238,6 +4638,99 @@
             <div class="curate-modal-footer">
                 <button class="btn-cancel" onclick="closeCurateModal()">Cancel</button>
                 <button class="btn-create" id="createCuratedPackBtn" onclick="createCuratedPack()" disabled>Create Pack</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stems View Panel -->
+    <div class="sidebar-view-panel" id="stemsPanel">
+        <div class="view-panel-header">
+            <h2 class="view-panel-title">Stem Projects</h2>
+            <button class="view-panel-close" onclick="closeSidebarView()">
+                <i data-lucide="x" class="lucide-icon"></i>
+            </button>
+        </div>
+        <div class="view-panel-content">
+            <button class="create-curated-btn" onclick="openStemsModal()">
+                <i data-lucide="plus" class="lucide-icon"></i>
+                Create New Project
+            </button>
+            <div class="stems-project-list" id="stemsProjectList">
+                <div class="sidebar-empty-state">
+                    <i data-lucide="layers" class="lucide-icon"></i>
+                    <h3>No stem projects yet</h3>
+                    <p>Upload your stems and share them with collaborators</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Stems Modal -->
+    <div class="stems-modal" id="stemsModal">
+        <div class="stems-modal-content">
+            <div class="stems-modal-header">
+                <h3 class="stems-modal-title">Create Stem Project</h3>
+                <button class="stems-modal-close" onclick="closeStemsModal()">
+                    <i data-lucide="x" class="lucide-icon"></i>
+                </button>
+            </div>
+            <div class="stems-modal-body">
+                <div class="stems-form-group">
+                    <label class="stems-form-label">Project Name *</label>
+                    <input type="text" class="stems-form-input" id="stemsProjectName" placeholder="e.g., My Track - Stems">
+                </div>
+                <div class="stems-form-group">
+                    <label class="stems-form-label">Description (optional)</label>
+                    <input type="text" class="stems-form-input" id="stemsDescription" placeholder="A short description of this stem project">
+                </div>
+                <div class="stems-form-group">
+                    <label class="stems-form-label">Upload Stems *</label>
+                    <div class="stems-upload-area" id="stemsUploadArea" onclick="document.getElementById('stemsFileInput').click()">
+                        <i data-lucide="upload-cloud" class="lucide-icon"></i>
+                        <h4>Drop stem files here</h4>
+                        <p>or click to browse (MP3, WAV, FLAC, M4A — up to 50MB each)</p>
+                        <input type="file" id="stemsFileInput" accept="audio/*" multiple>
+                    </div>
+                    <div class="stems-uploaded-files" id="stemsUploadedFiles" style="display: none;"></div>
+                </div>
+            </div>
+            <div class="stems-modal-footer">
+                <button class="btn-cancel" onclick="closeStemsModal()">Cancel</button>
+                <button class="btn-create" id="createStemProjectBtn" onclick="createStemProject()" disabled>Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stems Share Modal -->
+    <div class="stems-modal" id="stemsShareModal">
+        <div class="stems-modal-content" style="max-width: 480px;">
+            <div class="stems-modal-header">
+                <h3 class="stems-modal-title">Share Stem Project</h3>
+                <button class="stems-modal-close" onclick="closeStemsShareModal()">
+                    <i data-lucide="x" class="lucide-icon"></i>
+                </button>
+            </div>
+            <div class="stems-modal-body">
+                <div class="stems-form-group">
+                    <label class="stems-form-label">Share Link</label>
+                    <div class="stems-share-link-row">
+                        <input type="text" class="stems-form-input" id="stemsShareLinkInput" readonly>
+                        <button class="stems-share-copy-btn" onclick="copyStemsLink()">
+                            <i data-lucide="copy" class="lucide-icon"></i>
+                            Copy
+                        </button>
+                    </div>
+                </div>
+                <div class="stems-form-group">
+                    <label class="stems-form-label">Send via Email</label>
+                    <div class="stems-share-link-row">
+                        <input type="email" class="stems-form-input" id="stemsEmailInput" placeholder="recipient@email.com">
+                        <button class="stems-share-copy-btn" onclick="sendStemsEmail()">
+                            <i data-lucide="send" class="lucide-icon"></i>
+                            Send
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -6543,6 +7036,11 @@
                 const curatedResp = await fetch('/api/curated');
                 const curatedData = await curatedResp.json();
                 document.getElementById('curatedCount').textContent = curatedData.count || 0;
+
+                // Stems count
+                const stemsResp = await fetch('/api/stems');
+                const stemsData = await stemsResp.json();
+                document.getElementById('stemsCount').textContent = stemsData.count || 0;
             } catch (e) {
                 console.error('Error updating counts:', e);
             }
@@ -6592,6 +7090,8 @@
                 await loadDownloadedTracks();
             } else if (view === 'curate') {
                 await loadCuratedPacks();
+            } else if (view === 'stems') {
+                await loadStemProjects();
             }
         }
 
@@ -7214,6 +7714,377 @@
 
             createBtn.disabled = false;
             createBtn.textContent = 'Create Pack';
+        }
+
+        // ============================================
+        // STEMS FUNCTIONALITY
+        // ============================================
+
+        let stemProjects = [];
+        let stemsUploadedFiles = [];
+        let currentShareProjectId = null;
+
+        // Load stem projects
+        async function loadStemProjects() {
+            const container = document.getElementById('stemsProjectList');
+            container.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Loading...</div>';
+
+            try {
+                const response = await fetch('/api/stems');
+                const data = await response.json();
+                stemProjects = data.projects || [];
+
+                if (stemProjects.length > 0) {
+                    container.innerHTML = stemProjects.map(createStemProjectCard).join('');
+                    lucide.createIcons();
+                } else {
+                    container.innerHTML = `
+                        <div class="sidebar-empty-state">
+                            <i data-lucide="layers" class="lucide-icon"></i>
+                            <h3>No stem projects yet</h3>
+                            <p>Upload your stems and share them with collaborators</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+            } catch (e) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #ff4444;">Failed to load</div>';
+            }
+        }
+
+        // Create stem project card HTML
+        function createStemProjectCard(project) {
+            return `
+                <div class="stems-project-card" data-project-id="${project.id}">
+                    <div class="stems-project-header">
+                        <div class="stems-project-name">${project.name}</div>
+                    </div>
+                    ${project.description ? `<div class="stems-project-desc">${project.description}</div>` : ''}
+                    <div class="stems-project-stats">
+                        <span class="stems-project-stat">
+                            <i data-lucide="layers" class="lucide-icon"></i>
+                            ${project.file_count} stems
+                        </span>
+                        <span class="stems-project-stat">
+                            <i data-lucide="eye" class="lucide-icon"></i>
+                            ${project.view_count} views
+                        </span>
+                        <span class="stems-project-stat">
+                            <i data-lucide="download" class="lucide-icon"></i>
+                            ${project.download_count} downloads
+                        </span>
+                    </div>
+                    <div class="stems-project-actions">
+                        <button class="btn-share" onclick="event.stopPropagation(); openStemsShareModal(${project.id}, '${project.share_code}')">
+                            <i data-lucide="share-2" class="lucide-icon"></i>
+                            Share
+                        </button>
+                        <button class="btn-delete" onclick="event.stopPropagation(); deleteStemProject(${project.id})">
+                            <i data-lucide="trash-2" class="lucide-icon"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Open stems create modal
+        function openStemsModal() {
+            document.getElementById('stemsModal').classList.add('active');
+            stemsUploadedFiles = [];
+            document.getElementById('stemsProjectName').value = '';
+            document.getElementById('stemsDescription').value = '';
+            document.getElementById('createStemProjectBtn').disabled = true;
+            document.getElementById('stemsUploadedFiles').style.display = 'none';
+            document.getElementById('stemsUploadedFiles').innerHTML = '';
+            document.getElementById('stemsUploadArea').style.display = 'block';
+
+            setupStemsFileUpload();
+            lucide.createIcons();
+        }
+
+        // Close stems create modal
+        function closeStemsModal() {
+            document.getElementById('stemsModal').classList.remove('active');
+            stemsUploadedFiles = [];
+        }
+
+        // Setup stems file upload handlers
+        function setupStemsFileUpload() {
+            const uploadArea = document.getElementById('stemsUploadArea');
+            const fileInput = document.getElementById('stemsFileInput');
+
+            fileInput.onchange = (e) => {
+                handleStemsFiles(e.target.files);
+            };
+
+            uploadArea.ondragover = (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            };
+
+            uploadArea.ondragleave = (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            };
+
+            uploadArea.ondrop = (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                handleStemsFiles(e.dataTransfer.files);
+            };
+        }
+
+        // Handle stems files
+        function handleStemsFiles(files) {
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/mp4', 'audio/x-wav', 'audio/flac'];
+            const maxSize = 50 * 1024 * 1024; // 50MB per file
+
+            for (const file of files) {
+                if (file.size > maxSize) {
+                    showToast(`${file.name} is too large (max 50MB)`, 'error');
+                    continue;
+                }
+                if (allowedTypes.includes(file.type) || file.name.match(/\.(mp3|wav|m4a|flac)$/i)) {
+                    stemsUploadedFiles.push({
+                        file: file,
+                        stemType: detectStemType(file.name)
+                    });
+                } else {
+                    showToast(`${file.name} is not a supported audio format`, 'error');
+                }
+            }
+
+            renderStemsUploadedFiles();
+            validateStemsForm();
+        }
+
+        // Auto-detect stem type from filename
+        function detectStemType(filename) {
+            const lower = filename.toLowerCase();
+            if (/drum|kick|snare|hat|perc|cymbal/i.test(lower)) return 'drums';
+            if (/bass|808|sub/i.test(lower)) return 'bass';
+            if (/voc|vocal|voice|sing|acapella/i.test(lower)) return 'vocals';
+            if (/melody|lead|synth|pluck/i.test(lower)) return 'melody';
+            if (/key|piano|organ|chord|pad/i.test(lower)) return 'keys';
+            if (/fx|effect|sfx|riser|sweep|transition/i.test(lower)) return 'fx';
+            return 'other';
+        }
+
+        // Render stems uploaded files list
+        function renderStemsUploadedFiles() {
+            const container = document.getElementById('stemsUploadedFiles');
+            const uploadArea = document.getElementById('stemsUploadArea');
+
+            if (stemsUploadedFiles.length === 0) {
+                container.style.display = 'none';
+                uploadArea.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            uploadArea.style.display = 'block';
+
+            const stemTypes = ['drums', 'bass', 'vocals', 'melody', 'keys', 'fx', 'other'];
+
+            container.innerHTML = stemsUploadedFiles.map((item, index) => `
+                <div class="stems-uploaded-file">
+                    <div class="file-icon">
+                        <i data-lucide="music" class="lucide-icon"></i>
+                    </div>
+                    <div class="file-info">
+                        <div class="file-name">${item.file.name}</div>
+                        <div class="file-size">${formatFileSize(item.file.size)}</div>
+                    </div>
+                    <select class="file-type-select" onchange="stemsUploadedFiles[${index}].stemType = this.value">
+                        ${stemTypes.map(t => `<option value="${t}" ${item.stemType === t ? 'selected' : ''}>${t.charAt(0).toUpperCase() + t.slice(1)}</option>`).join('')}
+                    </select>
+                    <button class="file-remove" onclick="removeStemsFile(${index})">
+                        <i data-lucide="x" class="lucide-icon"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Remove a stem file
+        function removeStemsFile(index) {
+            stemsUploadedFiles.splice(index, 1);
+            renderStemsUploadedFiles();
+            validateStemsForm();
+        }
+
+        // Validate stems form
+        function validateStemsForm() {
+            const nameInput = document.getElementById('stemsProjectName');
+            const createBtn = document.getElementById('createStemProjectBtn');
+            const hasName = nameInput.value.trim().length > 0;
+            const hasFiles = stemsUploadedFiles.length > 0;
+            createBtn.disabled = !hasName || !hasFiles;
+        }
+
+        document.getElementById('stemsProjectName')?.addEventListener('input', validateStemsForm);
+
+        // Create stem project
+        async function createStemProject() {
+            const name = document.getElementById('stemsProjectName').value.trim();
+            const description = document.getElementById('stemsDescription').value.trim();
+            const createBtn = document.getElementById('createStemProjectBtn');
+            createBtn.disabled = true;
+            createBtn.textContent = 'Creating...';
+
+            try {
+                const filesData = [];
+
+                // Upload each stem file
+                for (let i = 0; i < stemsUploadedFiles.length; i++) {
+                    const item = stemsUploadedFiles[i];
+                    createBtn.textContent = `Uploading ${i + 1}/${stemsUploadedFiles.length}...`;
+
+                    const formData = new FormData();
+                    formData.append('audio', item.file);
+
+                    const uploadResp = await fetch('/api/upload-audio', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const uploadData = await uploadResp.json();
+                    if (uploadData.error) {
+                        showToast(`Failed to upload ${item.file.name}: ${uploadData.error}`, 'error');
+                        continue;
+                    }
+
+                    filesData.push({
+                        file_name: item.file.name,
+                        audio_url: uploadData.url || uploadData.audio_url,
+                        file_size: item.file.size,
+                        stem_type: item.stemType
+                    });
+                }
+
+                if (filesData.length === 0) {
+                    showToast('Failed to upload any files', 'error');
+                    createBtn.disabled = false;
+                    createBtn.textContent = 'Create Project';
+                    return;
+                }
+
+                createBtn.textContent = 'Creating project...';
+
+                const response = await fetch('/api/stems', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        description: description || null,
+                        files: filesData
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Stem project created!', 'success');
+                    closeStemsModal();
+                    loadStemProjects();
+                    updateSidebarCounts();
+
+                    // Open share modal
+                    if (data.project && data.project.share_code) {
+                        openStemsShareModal(data.project.id, data.project.share_code);
+                    }
+                } else {
+                    showToast(data.error || 'Failed to create project', 'error');
+                }
+            } catch (e) {
+                console.error('Error creating stem project:', e);
+                showToast('Failed to create project', 'error');
+            }
+
+            createBtn.disabled = false;
+            createBtn.textContent = 'Create Project';
+        }
+
+        // Open stems share modal
+        function openStemsShareModal(projectId, shareCode) {
+            currentShareProjectId = projectId;
+            const url = `${window.location.origin}/stems/${shareCode}`;
+            document.getElementById('stemsShareLinkInput').value = url;
+            document.getElementById('stemsEmailInput').value = '';
+            document.getElementById('stemsShareModal').classList.add('active');
+            lucide.createIcons();
+        }
+
+        // Close stems share modal
+        function closeStemsShareModal() {
+            document.getElementById('stemsShareModal').classList.remove('active');
+            currentShareProjectId = null;
+        }
+
+        // Copy stems share link
+        function copyStemsLink() {
+            const input = document.getElementById('stemsShareLinkInput');
+            const url = input.value;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Share link copied!', 'success');
+            }).catch(() => {
+                input.select();
+                document.execCommand('copy');
+                showToast('Share link copied!', 'success');
+            });
+        }
+
+        // Send stems email
+        async function sendStemsEmail() {
+            const email = document.getElementById('stemsEmailInput').value.trim();
+            if (!email) {
+                showToast('Please enter an email address', 'error');
+                return;
+            }
+
+            if (!currentShareProjectId) return;
+
+            try {
+                const response = await fetch(`/api/stems/${currentShareProjectId}/send-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.mailto_url) {
+                    window.location.href = data.mailto_url;
+                    showToast('Opening email client...', 'success');
+                } else {
+                    showToast(data.error || 'Failed to send email', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to generate email', 'error');
+            }
+        }
+
+        // Delete stem project
+        async function deleteStemProject(projectId) {
+            if (!confirm('Are you sure you want to delete this stem project?')) return;
+
+            try {
+                const response = await fetch(`/api/stems/${projectId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showToast('Project deleted', 'success');
+                    loadStemProjects();
+                    updateSidebarCounts();
+                } else {
+                    showToast(data.error || 'Failed to delete', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to delete project', 'error');
+            }
         }
 
         // Sidebar toggle for mobile

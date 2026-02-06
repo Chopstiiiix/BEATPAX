@@ -347,3 +347,64 @@ class CuratedPackTrack(db.Model):
             'track_order': self.track_order,
             'added_at': self.added_at.isoformat() if self.added_at else None
         }
+
+
+class StemProject(db.Model):
+    """User stem project for sharing music stems"""
+    __tablename__ = 'stem_projects'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    share_code = db.Column(db.String(8), unique=True, nullable=False)
+    view_count = db.Column(db.Integer, default=0)
+    download_count = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relationships
+    user = db.relationship('User', backref='stem_projects')
+    files = db.relationship('StemFile', backref='stem_project', lazy=True, cascade='all, delete-orphan')
+
+    def to_dict(self, include_files=False):
+        data = {
+            'id': self.id,
+            'user_id': self.user_id,
+            'creator_name': f"{self.user.first_name} {self.user.surname}" if self.user else None,
+            'name': self.name,
+            'description': self.description,
+            'share_code': self.share_code,
+            'share_url': f"/stems/{self.share_code}",
+            'view_count': self.view_count,
+            'download_count': self.download_count,
+            'file_count': len(self.files),
+            'created_at': self.created_at.isoformat() if self.created_at else None
+        }
+        if include_files:
+            data['files'] = [f.to_dict() for f in sorted(self.files, key=lambda x: x.track_order)]
+        return data
+
+
+class StemFile(db.Model):
+    """Individual stem file in a stem project"""
+    __tablename__ = 'stem_files'
+
+    id = db.Column(db.Integer, primary_key=True)
+    stem_project_id = db.Column(db.Integer, db.ForeignKey('stem_projects.id'), nullable=False)
+    file_name = db.Column(db.String(200), nullable=False)
+    audio_url = db.Column(db.String(500), nullable=False)
+    file_size = db.Column(db.Integer, default=0)
+    stem_type = db.Column(db.String(20), default='other')  # drums, bass, vocals, melody, keys, fx, other
+    track_order = db.Column(db.Integer, default=0)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'stem_project_id': self.stem_project_id,
+            'file_name': self.file_name,
+            'audio_url': self.audio_url,
+            'file_size': self.file_size,
+            'stem_type': self.stem_type,
+            'track_order': self.track_order
+        }
