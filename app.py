@@ -2374,5 +2374,17 @@ def make_admin(email):
 with app.app_context():
     db.create_all()
 
+    # Migrate: add missing columns to existing tables
+    from sqlalchemy import inspect, text
+    inspector = inspect(db.engine)
+    existing_columns = {col['name'] for col in inspector.get_columns('users')}
+    with db.engine.connect() as conn:
+        if 'username' not in existing_columns:
+            conn.execute(text('ALTER TABLE users ADD COLUMN username VARCHAR(50) UNIQUE'))
+            conn.commit()
+        if 'username_changed_at' not in existing_columns:
+            conn.execute(text('ALTER TABLE users ADD COLUMN username_changed_at TIMESTAMP'))
+            conn.commit()
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
