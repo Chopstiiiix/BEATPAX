@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Beatpax</title>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Söhne", Helvetica, Arial, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .admin-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 32px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .header-logo {
+            height: 36px;
+            width: 36px;
+            object-fit: contain;
+        }
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f0f0f0;
+        }
+        .admin-badge {
+            background: #dc2626;
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-user {
+            color: #888;
+            font-size: 0.85rem;
+        }
+        .header-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+        .header-link:hover { color: #fff; }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            padding: 0 32px;
+            background: rgba(255,255,255,0.02);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .tab-btn {
+            padding: 14px 24px;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            color: #666;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .tab-btn:hover { color: #aaa; }
+        .tab-btn.active {
+            color: #fff;
+            border-bottom-color: #dc2626;
+        }
+
+        /* Main content */
+        .admin-content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Stat cards */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .stat-label {
+            color: #666;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f0f0f0;
+        }
+        .stat-sub {
+            color: #dc2626;
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Section title */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #aaa;
+            margin-bottom: 16px;
+        }
+
+        /* Tables */
+        .admin-table-wrap {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            color: #666;
+            font-weight: 500;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: #ccc;
+            white-space: nowrap;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Search bar */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(220,38,38,0.5);
+        }
+        .search-input::placeholder { color: #555; }
+
+        /* Filter pills */
+        .filter-pills {
+            display: flex;
+            gap: 8px;
+        }
+        .pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .pill:hover { color: #ccc; border-color: rgba(255,255,255,0.2); }
+        .pill.active {
+            background: rgba(220,38,38,0.15);
+            border-color: rgba(220,38,38,0.4);
+            color: #ef4444;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.06);
+            color: #ccc;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-danger { border-color: rgba(220,38,38,0.3); color: #ef4444; }
+        .btn-danger:hover { background: rgba(220,38,38,0.15); }
+        .btn-star { border-color: rgba(234,179,8,0.3); color: #eab308; }
+        .btn-star:hover { background: rgba(234,179,8,0.1); }
+        .btn-star.featured { background: rgba(234,179,8,0.15); color: #facc15; }
+
+        /* Status dot */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-dot.active { background: #22c55e; }
+        .status-dot.inactive { background: #ef4444; }
+
+        /* Toggle switch */
+        .toggle {
+            position: relative;
+            width: 36px;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .toggle.on { background: #dc2626; }
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff;
+            transition: transform 0.2s;
+        }
+        .toggle.on::after { transform: translateX(16px); }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .pagination .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+        .page-info {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+            backdrop-filter: blur(20px);
+        }
+        .toast.success {
+            background: rgba(34,197,94,0.15);
+            border: 1px solid rgba(34,197,94,0.3);
+            color: #4ade80;
+        }
+        .toast.error {
+            background: rgba(239,68,68,0.15);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #f87171;
+        }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-header { padding: 12px 16px; }
+            .admin-content { padding: 16px; }
+            .tab-bar { padding: 0 16px; overflow-x: auto; }
+            .tab-btn { padding: 12px 16px; font-size: 0.8rem; }
+            .stat-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-user { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="admin-header">
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='images/beatpax-logo.png') }}" alt="Beatpax" class="header-logo">
+        <span class="header-title">Beatpax</span>
+        <span class="admin-badge">Admin</span>
+    </div>
+    <div class="header-right">
+        <span class="header-user">{{ session.get('user_name', '') }}</span>
+        <a href="/" class="header-link"><i data-lucide="arrow-left" style="width:14px;height:14px"></i> Back to App</a>
+        <a href="/logout" class="header-link"><i data-lucide="log-out" style="width:14px;height:14px"></i> Logout</a>
+    </div>
+</header>
+
+<!-- Tabs -->
+<nav class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('dashboard')">
+        <i data-lucide="layout-dashboard" style="width:16px;height:16px"></i> Dashboard
+    </button>
+    <button class="tab-btn" onclick="switchTab('users')">
+        <i data-lucide="users" style="width:16px;height:16px"></i> Users
+    </button>
+    <button class="tab-btn" onclick="switchTab('content')">
+        <i data-lucide="music" style="width:16px;height:16px"></i> Content
+    </button>
+</nav>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Content -->
+<main class="admin-content">
+
+    <!-- Dashboard Tab -->
+    <div class="tab-panel active" id="dashboardPanel">
+        <div class="loading" id="dashboardLoading">Loading stats...</div>
+        <div id="dashboardContent" style="display:none">
+            <div class="stat-grid" id="statGrid"></div>
+            <h3 class="section-title">Recent Signups</h3>
+            <div class="admin-table-wrap">
+                <table>
+                    <thead><tr><th>Name</th><th>Email</th><th>Joined</th></tr></thead>
+                    <tbody id="recentSignupsBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-panel" id="usersPanel">
+        <div class="toolbar">
+            <input type="text" class="search-input" id="userSearch" placeholder="Search users by name or email..." oninput="debouncedUserSearch()">
+        </div>
+        <div class="admin-table-wrap">
+            <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Last Login</th><th>Beats</th><th>Wallet</th><th>Admin</th><th>Actions</th></tr></thead>
+                <tbody id="usersBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="usersPagination"></div>
+    </div>
+
+    <!-- Content Tab -->
+    <div class="tab-panel" id="contentPanel">
+        <div class="toolbar">
+            <div class="filter-pills" id="contentPills">
+                <button class="pill active" onclick="switchContentType('beats')">Beats <span id="countBeats"></span></button>
+                <button class="pill" onclick="switchContentType('packs')">Packs <span id="countPacks"></span></button>
+                <button class="pill" onclick="switchContentType('curated')">Curated <span id="countCurated"></span></button>
+                <button class="pill" onclick="switchContentType('stems')">Stems <span id="countStems"></span></button>
+            </div>
+            <input type="text" class="search-input" id="contentSearch" placeholder="Search content..." oninput="debouncedContentSearch()" style="max-width:300px">
+        </div>
+        <div class="admin-table-wrap">
+            <table>
+                <thead id="contentHead"></thead>
+                <tbody id="contentBody"></tbody>
+            </table>
+        </div>
+        <div class="pagination" id="contentPagination"></div>
+    </div>
+
+</main>
+
+<script>
+// State
+let currentTab = 'dashboard';
+let currentContentType = 'beats';
+let usersPage = 1;
+let contentPage = 1;
+let userSearchTimeout = null;
+let contentSearchTimeout = null;
+
+// ---- Tab switching ----
+function switchTab(tab) {
+    currentTab = tab;
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', ['dashboard','users','content'][i] === tab);
+    });
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(tab + 'Panel').classList.add('active');
+
+    if (tab === 'dashboard') loadDashboard();
+    else if (tab === 'users') loadUsers();
+    else if (tab === 'content') loadContent();
+}
+
+// ---- Dashboard ----
+async function loadDashboard() {
+    const loading = document.getElementById('dashboardLoading');
+    const content = document.getElementById('dashboardContent');
+    loading.style.display = 'block';
+    content.style.display = 'none';
+
+    try {
+        const res = await fetch('/api/admin/stats');
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        const data = await res.json();
+
+        document.getElementById('statGrid').innerHTML = `
+            <div class="stat-card">
+                <div class="stat-label">Total Users</div>
+                <div class="stat-value">${data.total_users}</div>
+                <div class="stat-sub">+${data.new_users_7d} this week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Beats</div>
+                <div class="stat-value">${data.total_beats}</div>
+                <div class="stat-sub">${data.total_packs} packs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Downloads</div>
+                <div class="stat-value">${data.total_downloads}</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Total Plays</div>
+                <div class="stat-value">${data.total_plays}</div>
+            </div>
+        `;
+
+        const signupsHTML = data.recent_signups.map(u => `
+            <tr>
+                <td>${esc(u.name)}</td>
+                <td>${esc(u.email)}</td>
+                <td>${formatDate(u.created_at)}</td>
+            </tr>
+        `).join('');
+        document.getElementById('recentSignupsBody').innerHTML = signupsHTML || '<tr><td colspan="3" style="text-align:center;color:#555">No users yet</td></tr>';
+
+        loading.style.display = 'none';
+        content.style.display = 'block';
+    } catch (e) {
+        loading.textContent = 'Failed to load dashboard';
+        showToast('Failed to load dashboard', 'error');
+    }
+}
+
+// ---- Users ----
+async function loadUsers(page = 1) {
+    usersPage = page;
+    const search = document.getElementById('userSearch').value.trim();
+    const body = document.getElementById('usersBody');
+    body.innerHTML = '<tr><td colspan="8" class="loading">Loading...</td></tr>';
+
+    try {
+        const params = new URLSearchParams({ page, per_page: 20 });
+        if (search) params.set('search', search);
+        const res = await fetch('/api/admin/users?' + params);
+        if (!res.ok) throw new Error('Failed');
+        const data = await res.json();
+
+        body.innerHTML = data.users.map(u => `
+            <tr>
+                <td>${esc(u.name)}</td>
+                <td>${esc(u.email)}</td>
+                <td>${formatDate(u.created_at)}</td>
+                <td>${u.last_login ? formatDate(u.last_login) : '<span style="color:#555">Never</span>'}</td>
+                <td>${u.beat_count}</td>
+                <td>${u.wallet_balance}</td>
+                <td><div class="toggle ${u.is_admin ? 'on' : ''}" onclick="toggleAdmin(${u.id}, this)"></div></td>
+                <td>-</td>
+            </tr>
+        `).join('') || '<tr><td colspan="8" style="text-align:center;color:#555">No users found</td></tr>';
+
+        renderPagination('usersPagination', data.current_page, data.pages, 'loadUsers');
+    } catch (e) {
+        body.innerHTML = '<tr><td colspan="8" class="loading">Failed to load users</td></tr>';
+    }
+}
+
+function debouncedUserSearch() {
+    clearTimeout(userSearchTimeout);
+    userSearchTimeout = setTimeout(() => loadUsers(1), 300);
+}
+
+async function toggleAdmin(userId, el) {
+    if (!confirm('Toggle admin status for this user?')) return;
+    try {
+        const res = await fetch(`/api/admin/users/${userId}/toggle-admin`, { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, 'error'); return; }
+        el.classList.toggle('on', data.is_admin);
+        showToast(data.message, 'success');
+    } catch (e) {
+        showToast('Failed to toggle admin', 'error');
+    }
+}
+
+// ---- Content ----
+function switchContentType(type) {
+    currentContentType = type;
+    contentPage = 1;
+    document.querySelectorAll('#contentPills .pill').forEach(p => {
+        p.classList.toggle('active', p.textContent.trim().toLowerCase().startsWith(type));
+    });
+    document.getElementById('contentSearch').value = '';
+    loadContent();
+}
+
+async function loadContent(page = 1) {
+    contentPage = page;
+    const search = document.getElementById('contentSearch').value.trim();
+    const body = document.getElementById('contentBody');
+    const head = document.getElementById('contentHead');
+    body.innerHTML = '<tr><td colspan="8" class="loading">Loading...</td></tr>';
+
+    try {
+        const params = new URLSearchParams({ type: currentContentType, page, per_page: 20 });
+        if (search) params.set('search', search);
+        const res = await fetch('/api/admin/content?' + params);
+        if (!res.ok) throw new Error('Failed');
+        const data = await res.json();
+
+        // Update counts
+        if (data.counts) {
+            document.getElementById('countBeats').textContent = `(${data.counts.beats})`;
+            document.getElementById('countPacks').textContent = `(${data.counts.packs})`;
+            document.getElementById('countCurated').textContent = `(${data.counts.curated})`;
+            document.getElementById('countStems').textContent = `(${data.counts.stems})`;
+        }
+
+        // Render table header based on type
+        const headers = {
+            beats: '<tr><th>Status</th><th>Title</th><th>Creator</th><th>Genre</th><th>BPM</th><th>Plays</th><th>Downloads</th><th>Actions</th></tr>',
+            packs: '<tr><th>Status</th><th>Name</th><th>Creator</th><th>Genre</th><th>Tracks</th><th>Downloads</th><th>Actions</th></tr>',
+            curated: '<tr><th>Status</th><th>Name</th><th>Creator</th><th>Tracks</th><th>Views</th><th>Downloads</th><th>Actions</th></tr>',
+            stems: '<tr><th>Status</th><th>Name</th><th>Creator</th><th>Files</th><th>Views</th><th>Downloads</th><th>Actions</th></tr>'
+        };
+        head.innerHTML = headers[currentContentType];
+
+        // Render rows
+        body.innerHTML = data.items.map(item => renderContentRow(item)).join('')
+            || '<tr><td colspan="8" style="text-align:center;color:#555">No content found</td></tr>';
+
+        renderPagination('contentPagination', data.current_page, data.pages, 'loadContent');
+        lucide.createIcons();
+    } catch (e) {
+        body.innerHTML = '<tr><td colspan="8" class="loading">Failed to load content</td></tr>';
+    }
+}
+
+function renderContentRow(item) {
+    const statusDot = `<span class="status-dot ${item.is_active ? 'active' : 'inactive'}"></span>`;
+    // Map content_type for API calls (plural -> singular)
+    const typeMap = { beats: 'beat', packs: 'pack', curated: 'curated', stems: 'stem' };
+    const singularType = typeMap[currentContentType];
+
+    let featuredBtn = '';
+    if (currentContentType === 'beats' || currentContentType === 'packs') {
+        featuredBtn = `<button class="btn btn-star ${item.is_featured ? 'featured' : ''}" onclick="toggleFeatured('${singularType}', ${item.id})" title="Toggle featured">
+            <i data-lucide="star" style="width:12px;height:12px"></i>
+        </button>`;
+    }
+
+    const deleteBtn = `<button class="btn btn-danger" onclick="deleteContent('${singularType}', ${item.id}, '${esc(item.name)}')" title="Deactivate">
+        <i data-lucide="trash-2" style="width:12px;height:12px"></i>
+    </button>`;
+
+    const actions = `<td>${featuredBtn} ${deleteBtn}</td>`;
+
+    if (currentContentType === 'beats') {
+        return `<tr><td>${statusDot}</td><td>${esc(item.name)}</td><td>${esc(item.creator_name)}</td><td>${esc(item.genre || '')}</td><td>${item.bpm || '-'}</td><td>${item.play_count}</td><td>${item.download_count}</td>${actions}</tr>`;
+    } else if (currentContentType === 'packs') {
+        return `<tr><td>${statusDot}</td><td>${esc(item.name)}</td><td>${esc(item.creator_name)}</td><td>${esc(item.genre || '')}</td><td>${item.track_count}</td><td>${item.download_count}</td>${actions}</tr>`;
+    } else if (currentContentType === 'curated') {
+        return `<tr><td>${statusDot}</td><td>${esc(item.name)}</td><td>${esc(item.creator_name)}</td><td>${item.track_count}</td><td>${item.view_count}</td><td>${item.download_count}</td>${actions}</tr>`;
+    } else {
+        return `<tr><td>${statusDot}</td><td>${esc(item.name)}</td><td>${esc(item.creator_name)}</td><td>${item.file_count}</td><td>${item.view_count}</td><td>${item.download_count}</td>${actions}</tr>`;
+    }
+}
+
+function debouncedContentSearch() {
+    clearTimeout(contentSearchTimeout);
+    contentSearchTimeout = setTimeout(() => loadContent(1), 300);
+}
+
+async function deleteContent(type, id, name) {
+    if (!confirm(`Deactivate "${name}"? It will be hidden from users.`)) return;
+    try {
+        const res = await fetch(`/api/admin/content/${type}/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, 'error'); return; }
+        showToast(data.message, 'success');
+        loadContent(contentPage);
+    } catch (e) {
+        showToast('Failed to delete content', 'error');
+    }
+}
+
+async function toggleFeatured(type, id) {
+    try {
+        const res = await fetch(`/api/admin/content/${type}/${id}/toggle-featured`, { method: 'POST' });
+        const data = await res.json();
+        if (!res.ok) { showToast(data.error, 'error'); return; }
+        showToast(data.message, 'success');
+        loadContent(contentPage);
+    } catch (e) {
+        showToast('Failed to toggle featured', 'error');
+    }
+}
+
+// ---- Helpers ----
+function renderPagination(containerId, current, total, callbackName) {
+    const container = document.getElementById(containerId);
+    if (total <= 1) { container.innerHTML = ''; return; }
+    container.innerHTML = `
+        <button class="btn" ${current <= 1 ? 'disabled' : ''} onclick="${callbackName}(${current - 1})">Prev</button>
+        <span class="page-info">Page ${current} of ${total}</span>
+        <button class="btn" ${current >= total ? 'disabled' : ''} onclick="${callbackName}(${current + 1})">Next</button>
+    `;
+}
+
+function showToast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+function formatDate(iso) {
+    if (!iso) return '-';
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function esc(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// ---- Init ----
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    loadDashboard();
+});
+</script>
+</body>
+</html>

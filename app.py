@@ -112,6 +112,20 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('authenticated'):
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Authentication required'}), 401
+            return redirect(url_for('login'))
+        if not session.get('is_admin'):
+            if request.path.startswith('/api/'):
+                return jsonify({'error': 'Admin access required'}), 403
+            return redirect(url_for('beatpax'))
+        return f(*args, **kwargs)
+    return decorated_function
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if session.get('authenticated'):
@@ -306,6 +320,13 @@ def beatpax_library():
                           wallet_balance=wallet.balance,
                           page='library',
                           library=library)
+
+
+@app.route('/admin')
+@admin_required
+def admin_panel():
+    """Admin dashboard page"""
+    return render_template('admin.html')
 
 
 @app.route('/wallet')
@@ -1921,6 +1942,303 @@ def view_stem_project(share_code):
         db.session.rollback()
         print(f"Error viewing stem project: {e}")
         return redirect('/')
+
+
+# =============================================================================
+# Admin API Endpoints
+# =============================================================================
+
+@app.route('/api/admin/stats')
+@admin_required
+def admin_stats():
+    """Dashboard analytics"""
+    try:
+        from datetime import timedelta
+        week_ago = datetime.utcnow() - timedelta(days=7)
+
+        total_users = User.query.count()
+        new_users_7d = User.query.filter(User.created_at >= week_ago).count()
+        total_beats = Beat.query.count()
+        total_packs = SoundPack.query.count()
+        total_curated = CuratedPack.query.count()
+        total_stems = StemProject.query.count()
+        total_downloads = db.session.query(db.func.coalesce(db.func.sum(Beat.download_count), 0)).scalar()
+        total_plays = db.session.query(db.func.coalesce(db.func.sum(Beat.play_count), 0)).scalar()
+        total_transactions = Transaction.query.count()
+
+        recent_signups = User.query.order_by(User.created_at.desc()).limit(5).all()
+
+        return jsonify({
+            'total_users': total_users,
+            'new_users_7d': new_users_7d,
+            'total_beats': total_beats,
+            'total_packs': total_packs,
+            'total_curated': total_curated,
+            'total_stems': total_stems,
+            'total_downloads': total_downloads,
+            'total_plays': total_plays,
+            'total_transactions': total_transactions,
+            'recent_signups': [{
+                'id': u.id,
+                'name': f"{u.first_name} {u.surname}",
+                'email': u.email,
+                'created_at': u.created_at.isoformat() if u.created_at else None
+            } for u in recent_signups]
+        })
+    except Exception as e:
+        print(f"Error fetching admin stats: {e}")
+        return jsonify({'error': 'Failed to fetch stats'}), 500
+
+
+@app.route('/api/admin/users')
+@admin_required
+def admin_users():
+    """Paginated user list with search"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        search = request.args.get('search', '').strip()
+
+        query = User.query
+
+        if search:
+            search_term = f"%{search}%"
+            query = query.filter(
+                db.or_(
+                    User.first_name.ilike(search_term),
+                    User.surname.ilike(search_term),
+                    User.email.ilike(search_term)
+                )
+            )
+
+        query = query.order_by(User.created_at.desc())
+        paginated = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        users = []
+        for u in paginated.items:
+            beat_count = Beat.query.filter_by(creator_id=u.id).count()
+            pack_count = SoundPack.query.filter_by(creator_id=u.id).count()
+            wallet = Wallet.query.filter_by(user_id=u.id).first()
+            users.append({
+                'id': u.id,
+                'name': f"{u.first_name} {u.surname}",
+                'email': u.email,
+                'age': u.age,
+                'is_admin': u.is_admin,
+                'created_at': u.created_at.isoformat() if u.created_at else None,
+                'last_login': u.last_login.isoformat() if u.last_login else None,
+                'beat_count': beat_count,
+                'pack_count': pack_count,
+                'wallet_balance': wallet.balance if wallet else 0
+            })
+
+        return jsonify({
+            'users': users,
+            'total': paginated.total,
+            'pages': paginated.pages,
+            'current_page': page
+        })
+    except Exception as e:
+        print(f"Error fetching admin users: {e}")
+        return jsonify({'error': 'Failed to fetch users'}), 500
+
+
+@app.route('/api/admin/users/<int:user_id>/toggle-admin', methods=['POST'])
+@admin_required
+def admin_toggle_admin(user_id):
+    """Toggle admin status for a user"""
+    try:
+        if user_id == session.get('user_id'):
+            return jsonify({'error': 'Cannot change your own admin status'}), 400
+
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        user.is_admin = not user.is_admin
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'is_admin': user.is_admin,
+            'message': f"{'Promoted' if user.is_admin else 'Demoted'} {user.first_name} {user.surname}"
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error toggling admin: {e}")
+        return jsonify({'error': 'Failed to toggle admin status'}), 500
+
+
+@app.route('/api/admin/content')
+@admin_required
+def admin_content():
+    """Content list with type filter, search, pagination"""
+    try:
+        content_type = request.args.get('type', 'beats')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
+        search = request.args.get('search', '').strip()
+
+        allowed_types = ['beats', 'packs', 'curated', 'stems']
+        if content_type not in allowed_types:
+            return jsonify({'error': f'Invalid type. Allowed: {", ".join(allowed_types)}'}), 400
+
+        # Get counts for all types
+        counts = {
+            'beats': Beat.query.count(),
+            'packs': SoundPack.query.count(),
+            'curated': CuratedPack.query.count(),
+            'stems': StemProject.query.count()
+        }
+
+        items = []
+
+        if content_type == 'beats':
+            query = Beat.query
+            if search:
+                query = query.filter(Beat.title.ilike(f"%{search}%"))
+            paginated = query.order_by(Beat.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+            for b in paginated.items:
+                items.append({
+                    'id': b.id, 'name': b.title, 'creator_name': f"{b.creator.first_name} {b.creator.surname}" if b.creator else 'Unknown',
+                    'genre': b.genre, 'bpm': b.bpm, 'play_count': b.play_count, 'download_count': b.download_count,
+                    'is_active': b.is_active, 'is_featured': b.is_featured,
+                    'created_at': b.created_at.isoformat() if b.created_at else None
+                })
+        elif content_type == 'packs':
+            query = SoundPack.query
+            if search:
+                query = query.filter(SoundPack.name.ilike(f"%{search}%"))
+            paginated = query.order_by(SoundPack.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+            for p in paginated.items:
+                items.append({
+                    'id': p.id, 'name': p.name, 'creator_name': f"{p.creator.first_name} {p.creator.surname}" if p.creator else 'Unknown',
+                    'genre': p.genre, 'track_count': p.track_count, 'download_count': p.download_count,
+                    'is_active': p.is_active, 'is_featured': p.is_featured,
+                    'created_at': p.created_at.isoformat() if p.created_at else None
+                })
+        elif content_type == 'curated':
+            query = CuratedPack.query
+            if search:
+                query = query.filter(CuratedPack.name.ilike(f"%{search}%"))
+            paginated = query.order_by(CuratedPack.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+            for c in paginated.items:
+                items.append({
+                    'id': c.id, 'name': c.name, 'creator_name': f"{c.user.first_name} {c.user.surname}" if c.user else 'Unknown',
+                    'share_code': c.share_code, 'view_count': c.view_count, 'download_count': c.download_count,
+                    'track_count': len(c.tracks), 'is_active': c.is_active,
+                    'created_at': c.created_at.isoformat() if c.created_at else None
+                })
+        elif content_type == 'stems':
+            query = StemProject.query
+            if search:
+                query = query.filter(StemProject.name.ilike(f"%{search}%"))
+            paginated = query.order_by(StemProject.created_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
+            for s in paginated.items:
+                items.append({
+                    'id': s.id, 'name': s.name, 'creator_name': f"{s.user.first_name} {s.user.surname}" if s.user else 'Unknown',
+                    'file_count': len(s.files), 'view_count': s.view_count, 'download_count': s.download_count,
+                    'is_active': s.is_active,
+                    'created_at': s.created_at.isoformat() if s.created_at else None
+                })
+
+        return jsonify({
+            'items': items,
+            'total': paginated.total,
+            'pages': paginated.pages,
+            'current_page': page,
+            'counts': counts
+        })
+    except Exception as e:
+        print(f"Error fetching admin content: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': 'Failed to fetch content'}), 500
+
+
+@app.route('/api/admin/content/<content_type>/<int:content_id>', methods=['DELETE'])
+@admin_required
+def admin_delete_content(content_type, content_id):
+    """Soft-delete content"""
+    try:
+        type_map = {
+            'beat': Beat,
+            'pack': SoundPack,
+            'curated': CuratedPack,
+            'stem': StemProject
+        }
+
+        if content_type not in type_map:
+            return jsonify({'error': 'Invalid content type'}), 400
+
+        model = type_map[content_type]
+        item = model.query.get(content_id)
+        if not item:
+            return jsonify({'error': 'Content not found'}), 404
+
+        item.is_active = False
+
+        # For packs, also soft-delete child tracks
+        if content_type == 'pack':
+            for track in item.tracks:
+                track.is_active = False
+
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': f'{content_type.title()} deactivated'
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting content: {e}")
+        return jsonify({'error': 'Failed to delete content'}), 500
+
+
+@app.route('/api/admin/content/<content_type>/<int:content_id>/toggle-featured', methods=['POST'])
+@admin_required
+def admin_toggle_featured(content_type, content_id):
+    """Toggle featured flag on beats and packs"""
+    try:
+        if content_type not in ('beat', 'pack'):
+            return jsonify({'error': 'Featured only available for beats and packs'}), 400
+
+        model = Beat if content_type == 'beat' else SoundPack
+        item = model.query.get(content_id)
+        if not item:
+            return jsonify({'error': 'Content not found'}), 404
+
+        item.is_featured = not item.is_featured
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'is_featured': item.is_featured,
+            'message': f"{'Featured' if item.is_featured else 'Unfeatured'}"
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error toggling featured: {e}")
+        return jsonify({'error': 'Failed to toggle featured'}), 500
+
+
+# =============================================================================
+# CLI Commands
+# =============================================================================
+
+import click
+
+@app.cli.command('make-admin')
+@click.argument('email')
+def make_admin(email):
+    """Promote a user to admin by email."""
+    user = User.query.filter_by(email=email.lower().strip()).first()
+    if not user:
+        click.echo(f'User not found: {email}')
+        return
+    user.is_admin = True
+    db.session.commit()
+    click.echo(f'Promoted {user.first_name} {user.surname} ({user.email}) to admin.')
 
 
 # Create database tables on app startup

@@ -4433,6 +4433,12 @@
                     <div class="profile-dropdown-header">
                         <div class="profile-dropdown-name">{{ session.get('user_name', 'User') }}</div>
                     </div>
+                    {% if session.get('is_admin') %}
+                    <a href="/admin" class="profile-dropdown-item">
+                        <i data-lucide="shield" class="lucide-icon"></i>
+                        Admin Panel
+                    </a>
+                    {% endif %}
                     <a href="/logout" class="profile-dropdown-item sign-out">
                         <i data-lucide="log-out" class="lucide-icon"></i>
                         Sign Out
