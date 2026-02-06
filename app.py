@@ -1769,11 +1769,9 @@ def download_curated_pack(share_code):
         return jsonify({'error': 'Failed to download pack'}), 500
 
 
-# Create database tables on app startup (only in development)
-# On Vercel, use Vercel Postgres and run migrations separately
-if not os.environ.get('VERCEL'):
-    with app.app_context():
-        db.create_all()
+# Create database tables on app startup
+with app.app_context():
+    db.create_all()
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)
