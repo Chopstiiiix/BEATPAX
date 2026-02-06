@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Beatpax</title>
-    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <style>
         * {
@@ -15,259 +14,293 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Söhne", Helvetica, Arial, sans-serif;
-            background: #000000;
+            background: #0a0a0a;
             color: #ffffff;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
         }
 
-        .register-container {
+        /* Ambient background glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -40%;
+            left: -20%;
+            width: 60%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -30%;
+            right: -20%;
+            width: 50%;
+            height: 70%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .register-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 32px;
             width: 100%;
-            max-width: 500px;
-            background: #0d0d0d;
-            border-radius: 20px;
+            max-width: 420px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Logo section */
+        .logo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo-image {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(220, 38, 38, 0.3));
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .logo-image:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .logo-tagline {
+            color: #666;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Glass card */
+        .glass-card {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-radius: 24px;
             padding: 40px;
-            border: 1px solid #2d2d2d;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .logo h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #ffffff, #999999);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .logo p {
-            color: #666666;
-            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .form-title {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
             text-align: center;
+            color: #f0f0f0;
         }
 
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            color: #999999;
-            font-size: 0.9rem;
+            color: #888;
+            font-size: 0.8rem;
             margin-bottom: 8px;
             font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         input {
             width: 100%;
             padding: 14px 16px;
-            background: #1a1a1a;
-            border: 1px solid #2d2d2d;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             color: #ffffff;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
         input:focus {
             outline: none;
-            border-color: #ffffff;
-            background: #222222;
+            border-color: rgba(220, 38, 38, 0.5);
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
         input::placeholder {
-            color: #666666;
+            color: #555;
         }
 
         .error-message {
-            background: rgba(255, 77, 77, 0.1);
-            border: 1px solid rgba(255, 77, 77, 0.3);
-            color: #ff4d4d;
+            background: rgba(255, 77, 77, 0.08);
+            border: 1px solid rgba(255, 77, 77, 0.2);
+            color: #ff6b6b;
             padding: 12px 16px;
-            border-radius: 10px;
+            border-radius: 12px;
             margin-bottom: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
         }
 
         .submit-button {
             width: 100%;
-            padding: 16px;
-            background: #ffffff;
-            color: #000000;
+            padding: 15px;
+            background: #dc2626;
+            color: #ffffff;
             border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            border-radius: 14px;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 10px;
+            margin-top: 8px;
+            letter-spacing: 0.3px;
         }
 
         .submit-button:hover {
-            background: #e0e0e0;
+            background: #ef4444;
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+            box-shadow: 0 12px 32px rgba(220, 38, 38, 0.35);
         }
 
         .submit-button:active {
             transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
         }
 
         .divider {
-            text-align: center;
-            margin: 30px 0;
-            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 24px 0;
         }
 
-        .divider::before {
+        .divider::before,
+        .divider::after {
             content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
+            flex: 1;
             height: 1px;
-            background: #2d2d2d;
+            background: rgba(255, 255, 255, 0.08);
         }
 
         .divider span {
-            background: #0d0d0d;
-            padding: 0 15px;
-            position: relative;
-            color: #666666;
-            font-size: 0.9rem;
+            color: #555;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .login-link {
             text-align: center;
-            margin-top: 24px;
-            color: #999999;
+            color: #777;
             font-size: 0.9rem;
         }
 
         .login-link a {
-            color: #ffffff;
+            color: #ef4444;
             text-decoration: none;
             font-weight: 600;
             transition: color 0.3s ease;
         }
 
         .login-link a:hover {
-            color: #cccccc;
-        }
-
-        .back-link {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link a {
-            color: #666666;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link a:hover {
-            color: #999999;
+            color: #f87171;
         }
 
         @media (max-width: 600px) {
-            .register-container {
-                padding: 30px 20px;
+            .glass-card {
+                padding: 28px 20px;
+                border-radius: 20px;
             }
 
-            .logo h1 {
-                font-size: 1.6rem;
+            .logo-image {
+                width: 110px;
+                height: 110px;
             }
 
             .form-title {
-                font-size: 1.3rem;
+                font-size: 1.2rem;
             }
         }
-
     </style>
 </head>
 <body>
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
-    </script>
-
-    <div class="register-container">
-        <div class="logo">
-            <h1>Beatpax</h1>
-            <p>Beat Marketplace</p>
+    <div class="register-wrapper">
+        <div class="logo-section">
+            <img src="{{ url_for('static', filename='images/beatpax-logo.png') }}" alt="Beatpax" class="logo-image">
+            <span class="logo-tagline">Beat Marketplace</span>
         </div>
 
-        <h2 class="form-title">Create Your Account</h2>
+        <div class="glass-card">
+            <h2 class="form-title">Create Your Account</h2>
 
-        {% if error %}
-        <div class="error-message">
-            {{ error }}
-        </div>
-        {% endif %}
-
-        <form method="POST" action="/register">
-            <div class="form-group">
-                <label for="first_name">First Name</label>
-                <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required>
+            {% if error %}
+            <div class="error-message">
+                {{ error }}
             </div>
+            {% endif %}
 
-            <div class="form-group">
-                <label for="surname">Surname</label>
-                <input type="text" id="surname" name="surname" placeholder="Enter your surname" required>
+            <form method="POST" action="/register">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="surname">Surname</label>
+                    <input type="text" id="surname" name="surname" placeholder="Enter your surname" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone_number">Phone Number</label>
+                    <input type="tel" id="phone_number" name="phone_number" placeholder="+1 (555) 123-4567" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" placeholder="Enter your age" required min="13" max="120">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required minlength="8">
+                </div>
+
+                <button type="submit" class="submit-button">Create Account</button>
+            </form>
+
+            <div class="divider"><span>or</span></div>
+
+            <div class="login-link">
+                Already have an account? <a href="/login">Sign in</a>
             </div>
-
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
-            </div>
-
-            <div class="form-group">
-                <label for="phone_number">Phone Number</label>
-                <input type="tel" id="phone_number" name="phone_number" placeholder="+1 (555) 123-4567" required>
-            </div>
-
-            <div class="form-group">
-                <label for="age">Age</label>
-                <input type="number" id="age" name="age" placeholder="Enter your age" required min="13" max="120">
-            </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Create a strong password" required minlength="8">
-            </div>
-
-            <div class="form-group">
-                <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter your password" required minlength="8">
-            </div>
-
-            <button type="submit" class="submit-button">Create Account</button>
-        </form>
-
-        <div class="login-link">
-            Already have an account? <a href="/login">Sign in here</a>
-        </div>
-
-        <div class="back-link">
-            <a href="/">← Back to Home</a>
         </div>
     </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

@@ -3895,6 +3895,107 @@
                 display: block;
             }
         }
+
+        /* Profile Circle & Dropdown */
+        .profile-wrapper {
+            position: relative;
+        }
+
+        .profile-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #dc2626;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #ffffff;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        .profile-circle:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .profile-circle.active {
+            border-color: rgba(220, 38, 38, 0.6);
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            min-width: 200px;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-8px) scale(0.96);
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000;
+        }
+
+        .profile-dropdown.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .profile-dropdown-header {
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 4px;
+        }
+
+        .profile-dropdown-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #f0f0f0;
+        }
+
+        .profile-dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            color: #ccc;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .profile-dropdown-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .profile-dropdown-item.sign-out {
+            color: #ef4444;
+        }
+
+        .profile-dropdown-item.sign-out:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+        }
+
+        .profile-dropdown-item .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 <body>
@@ -3925,6 +4026,20 @@
                 <i data-lucide="upload" class="lucide-icon"></i>
                 Upload
             </button>
+            <div class="profile-wrapper">
+                <div class="profile-circle" id="profileCircle">
+                    {{ session.get('user_name', 'U')[0] | upper }}
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                    <div class="profile-dropdown-header">
+                        <div class="profile-dropdown-name">{{ session.get('user_name', 'User') }}</div>
+                    </div>
+                    <a href="/logout" class="profile-dropdown-item sign-out">
+                        <i data-lucide="log-out" class="lucide-icon"></i>
+                        Sign Out
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -4642,6 +4757,23 @@
         const uploadPanel = document.getElementById('uploadPanel');
         const walletPanel = document.getElementById('walletPanel');
         const audioPlayer = document.getElementById('audioPlayer');
+
+        // Profile Dropdown
+        const profileCircle = document.getElementById('profileCircle');
+        const profileDropdown = document.getElementById('profileDropdown');
+
+        profileCircle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileCircle.classList.toggle('active');
+            profileDropdown.classList.toggle('active');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileDropdown.contains(e.target) && e.target !== profileCircle) {
+                profileCircle.classList.remove('active');
+                profileDropdown.classList.remove('active');
+            }
+        });
 
         // Upload Panel
         document.getElementById('uploadBtn').addEventListener('click', () => {
