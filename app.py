@@ -134,6 +134,7 @@ def register():
     if request.method == 'POST':
         first_name = request.form.get('first_name', '').strip()
         surname = request.form.get('surname', '').strip()
+        username = request.form.get('username', '').strip()
         email = request.form.get('email', '').strip().lower()
         phone_number = request.form.get('phone_number', '').strip()
         age = request.form.get('age', '').strip()
@@ -149,6 +150,16 @@ def register():
 
         if len(password) < 8:
             return render_template('register.html', error='Password must be at least 8 characters long')
+
+        import re
+        if username:
+            if len(username) < 3 or len(username) > 30:
+                return render_template('register.html', error='Username must be 3-30 characters')
+            if not re.match(r'^[a-zA-Z0-9_]+$', username):
+                return render_template('register.html', error='Username can only contain letters, numbers, and underscores')
+            existing_username = User.query.filter(db.func.lower(User.username) == username.lower()).first()
+            if existing_username:
+                return render_template('register.html', error='Username is already taken')
 
         try:
             age_int = int(age)
@@ -167,6 +178,7 @@ def register():
             new_user = User(
                 first_name=first_name,
                 surname=surname,
+                username=username or None,
                 email=email,
                 phone_number=phone_number,
                 age=age_int
@@ -1807,6 +1819,7 @@ def get_profile():
         return jsonify({
             'first_name': user.first_name,
             'surname': user.surname,
+            'username': user.username,
             'email': user.email,
             'phone_number': user.phone_number,
             'age': user.age
@@ -1840,6 +1853,21 @@ def update_profile():
                 return jsonify({'error': 'Surname cannot be empty'}), 400
             user.surname = val
 
+        if 'username' in data:
+            import re
+            val = data['username'].strip() if data['username'] else ''
+            if val:
+                if len(val) < 3 or len(val) > 30:
+                    return jsonify({'error': 'Username must be 3-30 characters'}), 400
+                if not re.match(r'^[a-zA-Z0-9_]+$', val):
+                    return jsonify({'error': 'Username can only contain letters, numbers, and underscores'}), 400
+                existing = User.query.filter(db.func.lower(User.username) == val.lower(), User.id != user_id).first()
+                if existing:
+                    return jsonify({'error': 'Username is already taken'}), 400
+                user.username = val
+            else:
+                user.username = None
+
         if 'phone_number' in data:
             user.phone_number = data['phone_number'].strip()
 
@@ -1859,6 +1887,7 @@ def update_profile():
         return jsonify({
             'first_name': user.first_name,
             'surname': user.surname,
+            'username': user.username,
             'email': user.email,
             'phone_number': user.phone_number,
             'age': user.age

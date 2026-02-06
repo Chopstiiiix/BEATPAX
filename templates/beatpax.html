@@ -4818,6 +4818,10 @@
                     </div>
                 </div>
                 <div class="profile-form-group">
+                    <label class="profile-form-label">Username</label>
+                    <input type="text" class="profile-form-input" id="profileUsername" placeholder="e.g. beatmaker99" minlength="3" maxlength="30">
+                </div>
+                <div class="profile-form-group">
                     <label class="profile-form-label">Email</label>
                     <input type="email" class="profile-form-input" id="profileEmail" disabled>
                 </div>
@@ -8314,6 +8318,7 @@
                 if (response.ok) {
                     document.getElementById('profileFirstName').value = data.first_name || '';
                     document.getElementById('profileSurname').value = data.surname || '';
+                    document.getElementById('profileUsername').value = data.username || '';
                     document.getElementById('profileEmail').value = data.email || '';
                     document.getElementById('profilePhone').value = data.phone_number || '';
                     document.getElementById('profileAge').value = data.age || '';
@@ -8334,6 +8339,7 @@
         async function saveProfile() {
             const firstName = document.getElementById('profileFirstName').value.trim();
             const surname = document.getElementById('profileSurname').value.trim();
+            const username = document.getElementById('profileUsername').value.trim();
             const phone = document.getElementById('profilePhone').value.trim();
             const age = document.getElementById('profileAge').value.trim();
 
@@ -8343,6 +8349,14 @@
             }
             if (!surname) {
                 showToast('Surname cannot be empty', 'error');
+                return;
+            }
+            if (username && (username.length < 3 || username.length > 30)) {
+                showToast('Username must be 3-30 characters', 'error');
+                return;
+            }
+            if (username && !/^[a-zA-Z0-9_]+$/.test(username)) {
+                showToast('Username: letters, numbers, underscores only', 'error');
                 return;
             }
             if (age && (parseInt(age) < 13 || parseInt(age) > 120 || isNaN(parseInt(age)))) {
@@ -8361,6 +8375,7 @@
                     body: JSON.stringify({
                         first_name: firstName,
                         surname: surname,
+                        username: username || '',
                         phone_number: phone,
                         age: age ? parseInt(age) : null
                     })
