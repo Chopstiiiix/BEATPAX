@@ -12,6 +12,7 @@ class User(db.Model):
     first_name = db.Column(db.String(100), nullable=False)
     surname = db.Column(db.String(100), nullable=False)
     username = db.Column(db.String(50), unique=True, nullable=True)
+    username_changed_at = db.Column(db.DateTime, nullable=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone_number = db.Column(db.String(20), nullable=False)
     age = db.Column(db.Integer, nullable=False)

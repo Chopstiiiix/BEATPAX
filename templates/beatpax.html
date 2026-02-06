@@ -4820,6 +4820,7 @@
                 <div class="profile-form-group">
                     <label class="profile-form-label">Username</label>
                     <input type="text" class="profile-form-input" id="profileUsername" placeholder="e.g. beatmaker99" minlength="3" maxlength="30">
+                    <div class="profile-form-hint" id="profileUsernameHint" style="font-size: 12px; color: #666; margin-top: 6px;"></div>
                 </div>
                 <div class="profile-form-group">
                     <label class="profile-form-label">Email</label>
@@ -8322,6 +8323,19 @@
                     document.getElementById('profileEmail').value = data.email || '';
                     document.getElementById('profilePhone').value = data.phone_number || '';
                     document.getElementById('profileAge').value = data.age || '';
+
+                    const usernameInput = document.getElementById('profileUsername');
+                    const usernameHint = document.getElementById('profileUsernameHint');
+                    if (data.username_locked) {
+                        usernameInput.disabled = true;
+                        usernameHint.style.color = '#ef4444';
+                        usernameHint.textContent = `Username locked — ${data.username_days_left} day${data.username_days_left !== 1 ? 's' : ''} until you can change it again`;
+                    } else {
+                        usernameInput.disabled = false;
+                        usernameHint.style.color = '#666';
+                        usernameHint.textContent = 'Can be changed once every 30 days';
+                    }
+
                     document.getElementById('profileModal').classList.add('active');
                     lucide.createIcons();
                 } else {

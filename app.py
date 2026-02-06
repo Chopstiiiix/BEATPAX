@@ -1816,13 +1816,25 @@ def get_profile():
         user = User.query.get(user_id)
         if not user:
             return jsonify({'error': 'User not found'}), 404
+        from datetime import timedelta
+        username_cooldown_days = 30
+        username_locked = False
+        username_days_left = 0
+        if user.username_changed_at:
+            delta = datetime.utcnow() - user.username_changed_at
+            if delta < timedelta(days=username_cooldown_days):
+                username_locked = True
+                username_days_left = username_cooldown_days - delta.days
+
         return jsonify({
             'first_name': user.first_name,
             'surname': user.surname,
             'username': user.username,
             'email': user.email,
             'phone_number': user.phone_number,
-            'age': user.age
+            'age': user.age,
+            'username_locked': username_locked,
+            'username_days_left': username_days_left
         })
     except Exception as e:
         print(f"Error fetching profile: {e}")
@@ -1855,18 +1867,28 @@ def update_profile():
 
         if 'username' in data:
             import re
+            from datetime import timedelta
             val = data['username'].strip() if data['username'] else ''
-            if val:
-                if len(val) < 3 or len(val) > 30:
-                    return jsonify({'error': 'Username must be 3-30 characters'}), 400
-                if not re.match(r'^[a-zA-Z0-9_]+$', val):
-                    return jsonify({'error': 'Username can only contain letters, numbers, and underscores'}), 400
-                existing = User.query.filter(db.func.lower(User.username) == val.lower(), User.id != user_id).first()
-                if existing:
-                    return jsonify({'error': 'Username is already taken'}), 400
-                user.username = val
-            else:
-                user.username = None
+            old_username = user.username or ''
+            # Only enforce cooldown if the username is actually changing
+            if val.lower() != old_username.lower():
+                if user.username_changed_at:
+                    delta = datetime.utcnow() - user.username_changed_at
+                    if delta < timedelta(days=30):
+                        days_left = 30 - delta.days
+                        return jsonify({'error': f'Username can only be changed once every 30 days. {days_left} days remaining.'}), 400
+                if val:
+                    if len(val) < 3 or len(val) > 30:
+                        return jsonify({'error': 'Username must be 3-30 characters'}), 400
+                    if not re.match(r'^[a-zA-Z0-9_]+$', val):
+                        return jsonify({'error': 'Username can only contain letters, numbers, and underscores'}), 400
+                    existing = User.query.filter(db.func.lower(User.username) == val.lower(), User.id != user_id).first()
+                    if existing:
+                        return jsonify({'error': 'Username is already taken'}), 400
+                    user.username = val
+                else:
+                    user.username = None
+                user.username_changed_at = datetime.utcnow()
 
         if 'phone_number' in data:
             user.phone_number = data['phone_number'].strip()
