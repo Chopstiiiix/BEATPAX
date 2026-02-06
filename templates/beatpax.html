@@ -3936,26 +3936,34 @@
                 <i data-lucide="compass" class="lucide-icon"></i>
                 <span class="nav-label">Explore</span>
             </div>
-            <div class="sidebar-nav-item" data-view="liked" onclick="switchSidebarView('liked')">
-                <i data-lucide="heart" class="lucide-icon"></i>
-                <span class="nav-label">Liked Tracks</span>
-                <span class="nav-count" id="likedCount">0</span>
-            </div>
-            <div class="sidebar-nav-item" onclick="openMyUploadsPanel()">
-                <i data-lucide="folder" class="lucide-icon"></i>
-                <span class="nav-label">My Uploads</span>
-            </div>
-            <div class="sidebar-nav-item" data-view="downloaded" onclick="switchSidebarView('downloaded')">
-                <i data-lucide="download" class="lucide-icon"></i>
-                <span class="nav-label">Downloaded</span>
-                <span class="nav-count" id="downloadedCount">0</span>
-            </div>
             <div class="sidebar-divider"></div>
-            <div class="sidebar-section-title">Create</div>
+            <div class="sidebar-section-title">Curate</div>
             <div class="sidebar-nav-item" data-view="curate" onclick="switchSidebarView('curate')">
                 <i data-lucide="folder-plus" class="lucide-icon"></i>
                 <span class="nav-label">Curate</span>
                 <span class="nav-count" id="curatedCount">0</span>
+            </div>
+            <div class="sidebar-nav-item" data-view="stems" onclick="switchSidebarView('stems')">
+                <i data-lucide="layers" class="lucide-icon"></i>
+                <span class="nav-label">Stems</span>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Library</div>
+            <div class="sidebar-nav-item" onclick="openMyUploadsPanel()">
+                <i data-lucide="upload" class="lucide-icon"></i>
+                <span class="nav-label">Uploads</span>
+            </div>
+            <div class="sidebar-nav-item" data-view="downloaded" onclick="switchSidebarView('downloaded')">
+                <i data-lucide="download" class="lucide-icon"></i>
+                <span class="nav-label">Downloads</span>
+                <span class="nav-count" id="downloadedCount">0</span>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-title">Volt</div>
+            <div class="sidebar-nav-item" data-view="liked" onclick="switchSidebarView('liked')">
+                <i data-lucide="heart" class="lucide-icon"></i>
+                <span class="nav-label">Liked Tracks</span>
+                <span class="nav-count" id="likedCount">0</span>
             </div>
         </nav>
     </div>
