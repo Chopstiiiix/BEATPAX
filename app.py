@@ -1792,6 +1792,84 @@ def download_curated_pack(share_code):
 
 
 # =============================================================================
+# Profile API Endpoints
+# =============================================================================
+
+@app.route('/api/profile', methods=['GET'])
+@login_required
+def get_profile():
+    """Get current user's editable profile fields"""
+    user_id = session.get('user_id')
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        return jsonify({
+            'first_name': user.first_name,
+            'surname': user.surname,
+            'email': user.email,
+            'phone_number': user.phone_number,
+            'age': user.age
+        })
+    except Exception as e:
+        print(f"Error fetching profile: {e}")
+        return jsonify({'error': 'Failed to fetch profile'}), 500
+
+
+@app.route('/api/profile', methods=['PUT'])
+@login_required
+def update_profile():
+    """Update current user's profile fields"""
+    user_id = session.get('user_id')
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        data = request.get_json()
+
+        if 'first_name' in data:
+            val = data['first_name'].strip()
+            if not val:
+                return jsonify({'error': 'First name cannot be empty'}), 400
+            user.first_name = val
+
+        if 'surname' in data:
+            val = data['surname'].strip()
+            if not val:
+                return jsonify({'error': 'Surname cannot be empty'}), 400
+            user.surname = val
+
+        if 'phone_number' in data:
+            user.phone_number = data['phone_number'].strip()
+
+        if 'age' in data:
+            try:
+                age_int = int(data['age'])
+                if age_int < 13 or age_int > 120:
+                    return jsonify({'error': 'Please enter a valid age (13-120)'}), 400
+                user.age = age_int
+            except (ValueError, TypeError):
+                return jsonify({'error': 'Please enter a valid age'}), 400
+
+        db.session.commit()
+
+        session['user_name'] = f"{user.first_name} {user.surname}"
+
+        return jsonify({
+            'first_name': user.first_name,
+            'surname': user.surname,
+            'email': user.email,
+            'phone_number': user.phone_number,
+            'age': user.age
+        })
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating profile: {e}")
+        return jsonify({'error': 'Failed to update profile'}), 500
+
+
+# =============================================================================
 # Stems API Endpoints
 # =============================================================================
 

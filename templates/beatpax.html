@@ -3585,6 +3585,151 @@
             cursor: not-allowed;
         }
 
+        /* Edit Profile Modal */
+        .profile-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 300;
+            display: none;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .profile-modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        .profile-modal-content {
+            width: 100%;
+            max-width: 480px;
+            background: #0d0d0d;
+            border: 1px solid #2d2d2d;
+            border-radius: 16px;
+            margin-top: 40px;
+        }
+
+        .profile-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #2d2d2d;
+        }
+
+        .profile-modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .profile-modal-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .profile-modal-close:hover {
+            color: #fff;
+        }
+
+        .profile-modal-body {
+            padding: 24px;
+        }
+
+        .profile-form-group {
+            margin-bottom: 20px;
+        }
+
+        .profile-form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .profile-form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .profile-form-input:focus {
+            border-color: #4a4a4a;
+        }
+
+        .profile-form-input::placeholder {
+            color: #666;
+        }
+
+        .profile-form-input:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .profile-form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .profile-form-row .profile-form-group {
+            flex: 1;
+        }
+
+        .profile-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid #2d2d2d;
+        }
+
+        .profile-modal-footer button {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .profile-modal-footer .btn-cancel {
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            color: #fff;
+        }
+
+        .profile-modal-footer .btn-cancel:hover {
+            background: #2d2d2d;
+        }
+
+        .profile-modal-footer .btn-save {
+            background: #fff;
+            border: none;
+            color: #000;
+        }
+
+        .profile-modal-footer .btn-save:hover {
+            background: #e0e0e0;
+        }
+
+        .profile-modal-footer .btn-save:disabled {
+            background: #4a4a4a;
+            color: #888;
+            cursor: not-allowed;
+        }
+
         /* Curate source tabs */
         .curate-source-tabs {
             display: flex;
@@ -4431,8 +4576,12 @@
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="profile-dropdown-header">
-                        <div class="profile-dropdown-name">{{ session.get('user_name', 'User') }}</div>
+                        <div class="profile-dropdown-name" id="profileDropdownName">{{ session.get('user_name', 'User') }}</div>
                     </div>
+                    <a href="javascript:void(0)" class="profile-dropdown-item" onclick="openProfileModal()">
+                        <i data-lucide="user-pen" class="lucide-icon"></i>
+                        Edit Profile
+                    </a>
                     {% if session.get('is_admin') %}
                     <a href="/admin" class="profile-dropdown-item">
                         <i data-lucide="shield" class="lucide-icon"></i>
@@ -4644,6 +4793,48 @@
             <div class="curate-modal-footer">
                 <button class="btn-cancel" onclick="closeCurateModal()">Cancel</button>
                 <button class="btn-create" id="createCuratedPackBtn" onclick="createCuratedPack()" disabled>Create Pack</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-content">
+            <div class="profile-modal-header">
+                <h3 class="profile-modal-title">Edit Profile</h3>
+                <button class="profile-modal-close" onclick="closeProfileModal()">
+                    <i data-lucide="x" class="lucide-icon"></i>
+                </button>
+            </div>
+            <div class="profile-modal-body">
+                <div class="profile-form-row">
+                    <div class="profile-form-group">
+                        <label class="profile-form-label">First Name</label>
+                        <input type="text" class="profile-form-input" id="profileFirstName" placeholder="First name">
+                    </div>
+                    <div class="profile-form-group">
+                        <label class="profile-form-label">Surname</label>
+                        <input type="text" class="profile-form-input" id="profileSurname" placeholder="Surname">
+                    </div>
+                </div>
+                <div class="profile-form-group">
+                    <label class="profile-form-label">Email</label>
+                    <input type="email" class="profile-form-input" id="profileEmail" disabled>
+                </div>
+                <div class="profile-form-row">
+                    <div class="profile-form-group">
+                        <label class="profile-form-label">Phone</label>
+                        <input type="tel" class="profile-form-input" id="profilePhone" placeholder="Phone number">
+                    </div>
+                    <div class="profile-form-group">
+                        <label class="profile-form-label">Age</label>
+                        <input type="number" class="profile-form-input" id="profileAge" min="13" max="120" placeholder="Age">
+                    </div>
+                </div>
+            </div>
+            <div class="profile-modal-footer">
+                <button class="btn-cancel" onclick="closeProfileModal()">Cancel</button>
+                <button class="btn-save" id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
             </div>
         </div>
     </div>
@@ -8105,6 +8296,98 @@
             const sidebar = document.getElementById('beatpaxSidebar');
             this.classList.remove('active');
             sidebar.classList.remove('open');
+        });
+
+        // =========================
+        // Edit Profile
+        // =========================
+
+        async function openProfileModal() {
+            // Close the dropdown
+            profileCircle.classList.remove('active');
+            profileDropdown.classList.remove('active');
+
+            try {
+                const response = await fetch('/api/profile');
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('profileFirstName').value = data.first_name || '';
+                    document.getElementById('profileSurname').value = data.surname || '';
+                    document.getElementById('profileEmail').value = data.email || '';
+                    document.getElementById('profilePhone').value = data.phone_number || '';
+                    document.getElementById('profileAge').value = data.age || '';
+                    document.getElementById('profileModal').classList.add('active');
+                    lucide.createIcons();
+                } else {
+                    showToast(data.error || 'Failed to load profile', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to load profile', 'error');
+            }
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        async function saveProfile() {
+            const firstName = document.getElementById('profileFirstName').value.trim();
+            const surname = document.getElementById('profileSurname').value.trim();
+            const phone = document.getElementById('profilePhone').value.trim();
+            const age = document.getElementById('profileAge').value.trim();
+
+            if (!firstName) {
+                showToast('First name cannot be empty', 'error');
+                return;
+            }
+            if (!surname) {
+                showToast('Surname cannot be empty', 'error');
+                return;
+            }
+            if (age && (parseInt(age) < 13 || parseInt(age) > 120 || isNaN(parseInt(age)))) {
+                showToast('Please enter a valid age (13-120)', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('saveProfileBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving...';
+
+            try {
+                const response = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        first_name: firstName,
+                        surname: surname,
+                        phone_number: phone,
+                        age: age ? parseInt(age) : null
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const newName = `${data.first_name} ${data.surname}`;
+                    document.getElementById('profileDropdownName').textContent = newName;
+                    document.getElementById('profileCircle').textContent = data.first_name[0].toUpperCase();
+                    showToast('Profile updated', 'success');
+                    closeProfileModal();
+                } else {
+                    showToast(data.error || 'Failed to update profile', 'error');
+                }
+            } catch (e) {
+                showToast('Failed to update profile', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Save Changes';
+            }
+        }
+
+        // Close profile modal on overlay click
+        document.getElementById('profileModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProfileModal();
         });
 
         // Initial load
