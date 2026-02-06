@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% if pack %}
+    <title>{{ pack.name }} - Curated Pack | Beatpax</title>
+    <meta property="og:title" content="{{ pack.name }} - Curated Pack | Beatpax">
+    <meta property="og:description" content="{{ pack.track_count }} tracks curated by {{ pack.creator_name }}{% if pack.recipient_name %} for {{ pack.recipient_name }}{% endif %}">
+    <meta property="og:type" content="music.playlist">
+    {% if pack.cover_url %}
+    <meta property="og:image" content="{{ pack.cover_url }}">
+    <meta name="twitter:image" content="{{ pack.cover_url }}">
+    {% endif %}
+    <meta name="twitter:card" content="summary">
+    {% else %}
+    <title>Curated Pack Not Found - Beatpax</title>
+    {% endif %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #1a1a1a;
+            margin-bottom: 32px;
+        }
+
+        .logo {
+            height: 28px;
+            width: auto;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #fff;
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-secondary {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #2d2d2d;
+        }
+
+        .btn-secondary:hover {
+            background: #2d2d2d;
+        }
+
+        .btn-success {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            background: #16a34a;
+        }
+
+        .btn .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Error State */
+        .error-container {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .error-icon {
+            width: 64px;
+            height: 64px;
+            color: #444;
+            margin-bottom: 24px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .error-message {
+            color: #888;
+            margin-bottom: 32px;
+        }
+
+        /* Pack Header */
+        .pack-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .curated-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: #1a1a1a;
+            border: 1px solid #2d2d2d;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .curated-badge .lucide-icon {
+            width: 14px;
+            height: 14px;
+        }
+
+        .pack-cover {
+            width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            background: #1a1a1a;
+        }
+
+        .pack-cover-placeholder {
+            width: 200px;
+            height: 200px;
+            border-radius: 12px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .pack-cover-placeholder .lucide-icon {
+            width: 64px;
+            height: 64px;
+            color: #444;
+        }
+
+        .pack-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .pack-recipient {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .pack-creator {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .pack-description {
+            color: #888;
+            font-size: 15px;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+
+        .pack-meta {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .meta-item .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .free-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #166534;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4ade80;
+            margin-bottom: 24px;
+        }
+
+        .free-badge .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .paid-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #2d2d2d;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffd700;
+            margin-bottom: 24px;
+        }
+
+        .paid-badge .lucide-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .pack-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Track List */
+        .tracks-section {
+            margin-top: 32px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .track-count {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            background: #0d0d0d;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 16px;
+            background: #0d0d0d;
+            transition: background 0.2s ease;
+        }
+
+        .track-item:hover {
+            background: #1a1a1a;
+        }
+
+        .track-number {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .track-item:hover .track-number {
+            display: none;
+        }
+
+        .track-play-btn {
+            width: 28px;
+            height: 28px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .track-play-btn .lucide-icon {
+            width: 14px;
+            height: 14px;
+            color: #000;
+        }
+
+        .track-item:hover .track-play-btn {
+            display: flex;
+        }
+
+        .track-cover {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+
+        .track-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .track-title {
+            font-size: 15px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        /* Audio Player */
+        .audio-player {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0d0d0d;
+            border-top: 1px solid #1a1a1a;
+            padding: 12px 20px;
+            display: none;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+        }
+
+        .audio-player.active {
+            display: flex;
+        }
+
+        .player-track-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 200px;
+        }
+
+        .player-cover {
+            width: 48px;
+            height: 48px;
+            border-radius: 6px;
+            object-fit: cover;
+            background: #1a1a1a;
+        }
+
+        .player-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .player-artist {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .player-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .player-btn .lucide-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .player-progress {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: #2d2d2d;
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .player-time {
+            font-size: 12px;
+            color: #888;
+            min-width: 40px;
+        }
+
+        .player-close {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .player-close:hover {
+            color: #fff;
+        }
+
+        /* Download Section */
+        .download-section {
+            margin-top: 40px;
+            padding: 32px;
+            background: linear-gradient(135deg, #0d0d0d, #1a1a1a);
+            border: 1px solid #2d2d2d;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .download-text {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .download-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .wallet-info {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .wallet-info .lucide-icon {
+            width: 14px;
+            height: 14px;
+            color: #ffd700;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #1a1a1a;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border: 1px solid #22c55e;
+        }
+
+        .toast.error {
+            border: 1px solid #ef4444;
+        }
+
+        .toast .lucide-icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding: 24px 0;
+            border-top: 1px solid #1a1a1a;
+            text-align: center;
+            color: #555;
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: #888;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .pack-title {
+                font-size: 28px;
+            }
+
+            .pack-actions {
+                flex-direction: column;
+            }
+
+            .download-actions {
+                flex-direction: column;
+            }
+
+            .audio-player {
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+
+            .player-progress {
+                width: 100%;
+                order: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <a href="/">
+                <img src="{{ url_for('static', filename='images/beatpax-logo.png') }}" alt="Beatpax" class="logo">
+            </a>
+            <div class="header-actions">
+                {% if is_logged_in %}
+                <a href="/" class="btn btn-secondary">
+                    <i data-lucide="layout-grid" class="lucide-icon"></i>
+                    Browse
+                </a>
+                {% else %}
+                <a href="/login" class="btn btn-secondary">Log In</a>
+                <a href="/register" class="btn btn-primary">Sign Up</a>
+                {% endif %}
+            </div>
+        </header>
+
+        {% if error or not pack %}
+        <!-- Error State -->
+        <div class="error-container">
+            <i data-lucide="folder-x" class="lucide-icon error-icon"></i>
+            <h1 class="error-title">Curated Pack Not Found</h1>
+            <p class="error-message">This pack may have been removed or the link is invalid.</p>
+            <a href="/" class="btn btn-primary">Browse Beatpax</a>
+        </div>
+
+        {% else %}
+        <!-- Pack Header -->
+        <div class="pack-header">
+            <div class="curated-badge">
+                <i data-lucide="sparkles" class="lucide-icon"></i>
+                Curated Pack
+            </div>
+            {% if pack.cover_url %}
+            <img src="{{ pack.cover_url }}" alt="{{ pack.name }}" class="pack-cover">
+            {% else %}
+            <div class="pack-cover-placeholder">
+                <i data-lucide="music" class="lucide-icon"></i>
+            </div>
+            {% endif %}
+            <h1 class="pack-title">{{ pack.name }}</h1>
+            {% if pack.recipient_name %}
+            <p class="pack-recipient">{{ pack.recipient_name }}</p>
+            {% endif %}
+            <p class="pack-creator">Curated by {{ pack.creator_name }}</p>
+            {% if pack.description %}
+            <p class="pack-description">{{ pack.description }}</p>
+            {% endif %}
+            <div class="pack-meta">
+                <span class="meta-item">
+                    <i data-lucide="music" class="lucide-icon"></i>
+                    {{ pack.track_count }} tracks
+                </span>
+                <span class="meta-item">
+                    <i data-lucide="eye" class="lucide-icon"></i>
+                    {{ pack.view_count }} views
+                </span>
+            </div>
+            {% if pack.is_free %}
+            <div class="free-badge">
+                <i data-lucide="gift" class="lucide-icon"></i>
+                Free Download
+            </div>
+            {% else %}
+            <div class="paid-badge">
+                <i data-lucide="coins" class="lucide-icon"></i>
+                {{ pack.track_count }} tokens (1 per track)
+            </div>
+            {% endif %}
+            <div class="pack-actions">
+                <button class="btn btn-primary" onclick="playAll()">
+                    <i data-lucide="play" class="lucide-icon"></i>
+                    Play All
+                </button>
+                <button class="btn btn-secondary" onclick="copyShareLink()">
+                    <i data-lucide="share-2" class="lucide-icon"></i>
+                    Share
+                </button>
+            </div>
+        </div>
+
+        <!-- Track List -->
+        <div class="tracks-section">
+            <h2 class="section-title">
+                Tracks
+                <span class="track-count">({{ pack.track_count }})</span>
+            </h2>
+            <div class="track-list">
+                {% for track_entry in pack.tracks %}
+                {% set track = track_entry.beat %}
+                <div class="track-item" data-track-id="{{ track.id }}" data-audio-url="{{ track.audio_url }}">
+                    <span class="track-number">{{ loop.index }}</span>
+                    <button class="track-play-btn" onclick="playTrack({{ loop.index0 }})">
+                        <i data-lucide="play" class="lucide-icon"></i>
+                    </button>
+                    <img src="{{ track.cover_url or '/static/images/default-cover.png' }}" alt="" class="track-cover">
+                    <div class="track-info">
+                        <div class="track-title">{{ track.title }}</div>
+                        <div class="track-meta">
+                            <span>{{ track.creator_name or 'Unknown' }}</span>
+                            {% if track.bpm %}<span>{{ track.bpm }} BPM</span>{% endif %}
+                            {% if track.key %}<span>{{ track.key }}</span>{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            {% if pack.is_free %}
+            <h3 class="download-title">Download for Free</h3>
+            <p class="download-text">This pack was shared as a gift. Download all {{ pack.track_count }} tracks!</p>
+            <div class="download-actions">
+                <button class="btn btn-success" id="downloadBtn" onclick="downloadPack()">
+                    <i data-lucide="download" class="lucide-icon"></i>
+                    Download All Tracks
+                </button>
+            </div>
+            {% else %}
+            <h3 class="download-title">Download Pack</h3>
+            <p class="download-text">Get all {{ pack.track_count }} tracks for {{ pack.track_count }} tokens.</p>
+            {% if is_logged_in %}
+            <div class="wallet-info">
+                <i data-lucide="coins" class="lucide-icon"></i>
+                Your balance: {{ wallet_balance }} tokens
+            </div>
+            <br>
+            <div class="download-actions">
+                <button class="btn btn-primary" id="downloadBtn" onclick="downloadPack()">
+                    <i data-lucide="download" class="lucide-icon"></i>
+                    Download ({{ pack.track_count }} tokens)
+                </button>
+            </div>
+            {% else %}
+            <p class="download-text" style="color: #666; margin-top: 16px;">
+                Login to download this pack
+            </p>
+            <div class="download-actions">
+                <a href="/login" class="btn btn-secondary">Log In</a>
+                <a href="/register" class="btn btn-primary">Sign Up</a>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Shared via <a href="/">Beatpax</a> - Discover and share beats</p>
+        </footer>
+        {% endif %}
+    </div>
+
+    <!-- Audio Player -->
+    <div class="audio-player" id="audioPlayer">
+        <div class="player-track-info">
+            <img src="" alt="" class="player-cover" id="playerCover">
+            <div>
+                <div class="player-title" id="playerTitle">Track Title</div>
+                <div class="player-artist" id="playerArtist">Artist</div>
+            </div>
+        </div>
+        <div class="player-controls">
+            <button class="player-btn" onclick="prevTrack()">
+                <i data-lucide="skip-back" class="lucide-icon"></i>
+            </button>
+            <button class="player-btn" id="playPauseBtn" onclick="togglePlayPause()">
+                <i data-lucide="play" class="lucide-icon"></i>
+            </button>
+            <button class="player-btn" onclick="nextTrack()">
+                <i data-lucide="skip-forward" class="lucide-icon"></i>
+            </button>
+        </div>
+        <div class="player-progress">
+            <span class="player-time" id="currentTime">0:00</span>
+            <div class="progress-bar" onclick="seekTo(event)">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="player-time" id="totalTime">0:00</span>
+        </div>
+        <button class="player-close" onclick="closePlayer()">
+            <i data-lucide="x" class="lucide-icon"></i>
+        </button>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <i data-lucide="check-circle" class="lucide-icon" id="toastIcon"></i>
+        <span id="toastMessage">Link copied!</span>
+    </div>
+
+    <audio id="audioElement"></audio>
+
+    <script>
+        lucide.createIcons();
+
+        {% if pack %}
+        const packData = {{ pack | tojson | safe }};
+        const shareCode = '{{ pack.share_code }}';
+        {% else %}
+        const packData = null;
+        const shareCode = null;
+        {% endif %}
+
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        const audio = document.getElementById('audioElement');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        // Get track data from packData
+        function getTrack(index) {
+            if (!packData || !packData.tracks || !packData.tracks[index]) return null;
+            return packData.tracks[index].beat;
+        }
+
+        // Play specific track
+        function playTrack(index) {
+            const track = getTrack(index);
+            if (!track) return;
+
+            currentTrackIndex = index;
+
+            audio.src = track.audio_url;
+            document.getElementById('playerCover').src = track.cover_url || '/static/images/default-cover.png';
+            document.getElementById('playerTitle').textContent = track.title;
+            document.getElementById('playerArtist').textContent = track.creator_name || 'Unknown';
+
+            audioPlayer.classList.add('active');
+            audio.play();
+            isPlaying = true;
+            updatePlayPauseBtn();
+
+            // Record play count
+            fetch(`/api/beats/${track.id}/play`, { method: 'POST' });
+        }
+
+        // Play all tracks
+        function playAll() {
+            playTrack(0);
+        }
+
+        // Toggle play/pause
+        function togglePlayPause() {
+            if (isPlaying) {
+                audio.pause();
+            } else {
+                audio.play();
+            }
+            isPlaying = !isPlaying;
+            updatePlayPauseBtn();
+        }
+
+        function updatePlayPauseBtn() {
+            const icon = document.querySelector('#playPauseBtn .lucide-icon');
+            icon.setAttribute('data-lucide', isPlaying ? 'pause' : 'play');
+            lucide.createIcons();
+        }
+
+        // Previous track
+        function prevTrack() {
+            if (currentTrackIndex > 0) {
+                playTrack(currentTrackIndex - 1);
+            }
+        }
+
+        // Next track
+        function nextTrack() {
+            if (packData && currentTrackIndex < packData.tracks.length - 1) {
+                playTrack(currentTrackIndex + 1);
+            }
+        }
+
+        // Close player
+        function closePlayer() {
+            audio.pause();
+            audioPlayer.classList.remove('active');
+            isPlaying = false;
+        }
+
+        // Audio progress
+        audio.addEventListener('timeupdate', () => {
+            const progress = (audio.currentTime / audio.duration) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentTime').textContent = formatTime(audio.currentTime);
+            document.getElementById('totalTime').textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('ended', () => {
+            nextTrack();
+        });
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '0:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function seekTo(e) {
+            const bar = e.currentTarget;
+            const rect = bar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = percent * audio.duration;
+        }
+
+        // Copy share link
+        function copyShareLink() {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Link copied to clipboard!', 'success');
+            }).catch(() => {
+                // Fallback
+                const input = document.createElement('input');
+                input.value = url;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast('Link copied to clipboard!', 'success');
+            });
+        }
+
+        // Download pack
+        async function downloadPack() {
+            if (!shareCode) return;
+
+            const btn = document.getElementById('downloadBtn');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i data-lucide="loader-2" class="lucide-icon" style="animation: spin 1s linear infinite;"></i> Downloading...';
+            }
+
+            try {
+                const response = await fetch(`/api/curated/${shareCode}/download`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+
+                if (data.require_login) {
+                    showToast('Please login to download', 'error');
+                    setTimeout(() => window.location.href = '/login', 1500);
+                    return;
+                }
+
+                if (data.error) {
+                    showToast(data.error, 'error');
+                    return;
+                }
+
+                if (data.success) {
+                    if (data.is_free && data.tracks) {
+                        // Free pack - initiate downloads
+                        showToast('Starting downloads...', 'success');
+                        data.tracks.forEach((track, i) => {
+                            setTimeout(() => {
+                                const a = document.createElement('a');
+                                a.href = track.audio_url;
+                                a.download = track.title + '.mp3';
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            }, i * 500);
+                        });
+                    } else {
+                        showToast(data.message || 'Tracks added to your library!', 'success');
+                        // Update wallet display if present
+                        if (data.new_balance !== undefined) {
+                            const walletInfo = document.querySelector('.wallet-info');
+                            if (walletInfo) {
+                                walletInfo.innerHTML = `<i data-lucide="coins" class="lucide-icon"></i> Your balance: ${data.new_balance} tokens`;
+                                lucide.createIcons();
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.error('Download error:', e);
+                showToast('Failed to download', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    if (packData && packData.is_free) {
+                        btn.innerHTML = '<i data-lucide="download" class="lucide-icon"></i> Download All Tracks';
+                    } else {
+                        btn.innerHTML = `<i data-lucide="download" class="lucide-icon"></i> Download (${packData?.track_count || 0} tokens)`;
+                    }
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMessage').textContent = message;
+
+            toast.className = 'toast ' + type;
+            icon.setAttribute('data-lucide', type === 'success' ? 'check-circle' : 'x-circle');
+            lucide.createIcons();
+
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Add spin animation for loader
+        const style = document.createElement('style');
+        style.textContent = '@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }';
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
