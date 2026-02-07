@@ -5011,7 +5011,7 @@
     <!-- Curate View Panel -->
     <div class="sidebar-view-panel" id="curatePanel">
         <div class="view-panel-header">
-            <h2 class="view-panel-title">Curated Packs</h2>
+            <h2 class="view-panel-title">Curated Pax</h2>
             <button class="view-panel-close" onclick="closeSidebarView()">
                 <i data-lucide="x" class="lucide-icon"></i>
             </button>
@@ -5019,7 +5019,7 @@
         <div class="view-panel-content">
             <button class="create-curated-btn" onclick="openCurateModal()">
                 <i data-lucide="plus" class="lucide-icon"></i>
-                Create New Pack
+                Create New Pax
             </button>
             <div class="curated-pack-list" id="curatedPackList">
                 <div class="sidebar-empty-state">
@@ -5035,19 +5035,19 @@
     <div class="curate-modal" id="curateModal">
         <div class="curate-modal-content">
             <div class="curate-modal-header">
-                <h3 class="curate-modal-title">Create Curated Pack</h3>
+                <h3 class="curate-modal-title">Create Curated Pax</h3>
                 <button class="curate-modal-close" onclick="closeCurateModal()">
                     <i data-lucide="x" class="lucide-icon"></i>
                 </button>
             </div>
             <div class="curate-modal-body">
                 <div class="curate-form-group">
-                    <label class="curate-form-label">Pack Name *</label>
+                    <label class="curate-form-label">Pax Name *</label>
                     <input type="text" class="curate-form-input" id="curatePackName" placeholder="e.g., Summer Vibes Collection">
                 </div>
                 <div class="curate-form-group">
                     <label class="curate-form-label">Description (optional)</label>
-                    <input type="text" class="curate-form-input" id="curateDescription" placeholder="A short description of your pack">
+                    <input type="text" class="curate-form-input" id="curateDescription" placeholder="A short description of your pax">
                 </div>
                 <div class="curate-form-group">
                     <label class="curate-form-label">Album Art (optional)</label>
@@ -5060,7 +5060,7 @@
                             <img id="curateCoverImage" src="" alt="" style="display: none;">
                         </div>
                         <div class="curate-cover-info">
-                            <h4>Pack Cover Image</h4>
+                            <h4>Pax Cover Image</h4>
                             <p>JPG, PNG or GIF. Recommended 500x500px.</p>
                             <button type="button" class="curate-cover-btn" onclick="document.getElementById('curateCoverInput').click()">
                                 <i data-lucide="upload" class="lucide-icon"></i>
@@ -5119,7 +5119,7 @@
             </div>
             <div class="curate-modal-footer">
                 <button class="btn-cancel" onclick="closeCurateModal()">Cancel</button>
-                <button class="btn-create" id="createCuratedPackBtn" onclick="createCuratedPack()" disabled>Create Pack</button>
+                <button class="btn-create" id="createCuratedPackBtn" onclick="createCuratedPack()" disabled>Create Pax</button>
             </div>
         </div>
     </div>
@@ -5323,7 +5323,7 @@
             <div class="lower-section">
                 <h3 class="lower-section-title">
                     <i data-lucide="trending-up" class="lucide-icon"></i>
-                    Trending Packs
+                    Trending Pax
                 </h3>
                 <div class="lower-beat-list" id="trendingList">
                     <div class="loading">
@@ -5336,7 +5336,7 @@
             <div class="lower-section">
                 <h3 class="lower-section-title">
                     <i data-lucide="sparkles" class="lucide-icon"></i>
-                    Fresh Packs
+                    Fresh Pax
                 </h3>
                 <div class="lower-beat-list" id="freshList">
                     <div class="loading">
@@ -5395,7 +5395,7 @@
     <div class="upload-panel" id="uploadPanel">
         <div class="upload-modal">
             <div class="upload-header">
-                <h2>Upload Sound Pack</h2>
+                <h2>Upload Sound Pax</h2>
                 <button class="close-btn" id="closeUpload">
                     <i data-lucide="x" class="lucide-icon"></i>
                 </button>
@@ -5403,10 +5403,10 @@
             <form class="upload-form" id="uploadForm" enctype="multipart/form-data">
                 <!-- Pack Info Section -->
                 <div class="form-section">
-                    <div class="section-header">Pack Info</div>
+                    <div class="section-header">Pax Info</div>
 
                     <div class="form-group">
-                        <label class="form-label">Pack Name *</label>
+                        <label class="form-label">Pax Name *</label>
                         <input type="text" class="form-input" name="pack_name" placeholder="e.g. Summer Vibes Vol. 1" required>
                     </div>
 
@@ -5451,7 +5451,7 @@
                         <div class="pricing-info">
                             <i data-lucide="coins" class="lucide-icon"></i>
                             <span>1 token per track</span>
-                            <span class="pricing-hint">Pack price = number of tracks</span>
+                            <span class="pricing-hint">Pax price = number of tracks</span>
                         </div>
                     </div>
                 </div>
@@ -5495,7 +5495,7 @@
                 </div>
 
                 <button type="submit" class="upload-submit" id="uploadSubmit">
-                    Upload Sound Pack
+                    Upload Sound Pax
                 </button>
             </form>
         </div>
@@ -5558,7 +5558,7 @@
                 <div class="my-uploads-empty" id="myUploadsEmpty" style="display: none;">
                     <i data-lucide="music" class="lucide-icon"></i>
                     <h3>No uploads yet</h3>
-                    <p>Upload your first sound pack to see it here!</p>
+                    <p>Upload your first sound pax to see it here!</p>
                     <button class="btn btn-primary" onclick="document.getElementById('myUploadsPanel').classList.remove('active'); document.getElementById('uploadPanel').classList.add('active');">
                         Upload Now
                     </button>
@@ -5572,7 +5572,7 @@
     <div class="upload-panel" id="editPackPanel">
         <div class="upload-modal edit-modal">
             <div class="upload-header">
-                <h2>Edit Sound Pack</h2>
+                <h2>Edit Sound Pax</h2>
                 <button class="close-btn" id="closeEditPack">
                     <i data-lucide="x" class="lucide-icon"></i>
                 </button>
@@ -5580,7 +5580,7 @@
             <form class="upload-form" id="editPackForm">
                 <input type="hidden" id="editPackId">
                 <div class="form-group">
-                    <label class="form-label">Pack Name</label>
+                    <label class="form-label">Pax Name</label>
                     <input type="text" class="form-input" id="editPackName" required>
                 </div>
                 <div class="form-group">
@@ -5637,8 +5637,8 @@
             <div class="pack-detail-main">
                 <img src="" alt="" class="pack-detail-cover" id="packDetailCover">
                 <div class="pack-detail-info">
-                    <div class="pack-detail-type">Sound Pack</div>
-                    <h1 class="pack-detail-title" id="packDetailTitle">Pack Name</h1>
+                    <div class="pack-detail-type">Sound Pax</div>
+                    <h1 class="pack-detail-title" id="packDetailTitle">Pax Name</h1>
                     <p class="pack-detail-creator" id="packDetailCreator">by Creator</p>
                     <div class="pack-detail-meta">
                         <span class="pack-detail-meta-item">
@@ -6005,7 +6005,7 @@
                 const pack = data.sound_packs.find(p => p.id === packId);
 
                 if (!pack) {
-                    showToast('Pack not found', 'error');
+                    showToast('Pax not found', 'error');
                     return;
                 }
 
@@ -6037,7 +6037,7 @@
 
             } catch (error) {
                 console.error('Error loading pack:', error);
-                showToast('Failed to load pack', 'error');
+                showToast('Failed to load pax', 'error');
             }
         }
 
@@ -6079,7 +6079,7 @@
                     });
                 }
 
-                showToast('Pack updated successfully!', 'success');
+                showToast('Pax updated successfully!', 'success');
                 editPackPanel.classList.remove('active');
                 myUploadsPanel.classList.add('active');
                 loadMyUploads();
@@ -6087,7 +6087,7 @@
 
             } catch (error) {
                 console.error('Error updating pack:', error);
-                showToast('Failed to update pack', 'error');
+                showToast('Failed to update pax', 'error');
             }
         });
 
@@ -6104,7 +6104,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    showToast('Pack deleted successfully!', 'success');
+                    showToast('Pax deleted successfully!', 'success');
                     loadMyUploads();
                     loadCatalog();
                 } else {
@@ -6112,7 +6112,7 @@
                 }
             } catch (error) {
                 console.error('Error deleting pack:', error);
-                showToast('Failed to delete pack', 'error');
+                showToast('Failed to delete pax', 'error');
             }
         }
 
@@ -6142,7 +6142,7 @@
         }
 
         async function deleteTrackFromPack(trackId, trackTitle) {
-            if (!confirm(`Delete "${trackTitle}" from this pack?`)) {
+            if (!confirm(`Delete "${trackTitle}" from this pax?`)) {
                 return;
             }
 
@@ -6523,7 +6523,7 @@
                     </div>
                 `).join('');
             } else {
-                trackList.innerHTML = '<div style="padding: 20px; color: #666; text-align: center;">No tracks in this pack</div>';
+                trackList.innerHTML = '<div style="padding: 20px; color: #666; text-align: center;">No tracks in this pax</div>';
             }
 
             // Show modal and hide player bar initially
@@ -6985,7 +6985,7 @@
             if (downloaded > 0) {
                 showToast(`${downloaded} tracks added to your library!`, 'success');
             } else {
-                showToast('Failed to download pack', 'error');
+                showToast('Failed to download pax', 'error');
             }
         });
 
@@ -7057,8 +7057,8 @@
                     newReleasesGrid.innerHTML = `
                         <div class="empty-state">
                             <i data-lucide="disc" class="lucide-icon"></i>
-                            <h3>No sound packs yet</h3>
-                            <p>Be the first to upload a sound pack!</p>
+                            <h3>No sound pax yet</h3>
+                            <p>Be the first to upload a sound pax!</p>
                         </div>
                     `;
                 }
@@ -7068,7 +7068,7 @@
                 if (data.trending && data.trending.length > 0) {
                     trendingList.innerHTML = data.trending.slice(0, 5).map(createLowerPackItem).join('');
                 } else {
-                    trendingList.innerHTML = '<div class="empty-state"><p>No trending packs yet</p></div>';
+                    trendingList.innerHTML = '<div class="empty-state"><p>No trending pax yet</p></div>';
                 }
 
                 // Fresh Packs
@@ -7076,7 +7076,7 @@
                 if (data.fresh && data.fresh.length > 0) {
                     freshList.innerHTML = data.fresh.slice(0, 5).map(createLowerPackItem).join('');
                 } else {
-                    freshList.innerHTML = '<div class="empty-state"><p>No fresh packs yet</p></div>';
+                    freshList.innerHTML = '<div class="empty-state"><p>No fresh pax yet</p></div>';
                 }
 
                 // Creators
@@ -7116,7 +7116,7 @@
                     grid.innerHTML = `
                         <div class="empty-state">
                             <i data-lucide="disc" class="lucide-icon"></i>
-                            <h3>No sound packs found</h3>
+                            <h3>No sound pax found</h3>
                             <p>Try a different genre or upload your own!</p>
                         </div>
                     `;
@@ -7126,7 +7126,7 @@
 
             } catch (error) {
                 console.error('Error loading packs:', error);
-                grid.innerHTML = '<div class="empty-state"><p>Failed to load sound packs</p></div>';
+                grid.innerHTML = '<div class="empty-state"><p>Failed to load sound pax</p></div>';
             }
         }
 
@@ -7329,7 +7329,7 @@
 
             // Validate pack name
             if (!packNameInput.value.trim()) {
-                showToast('Please enter a pack name', 'error');
+                showToast('Please enter a pax name', 'error');
                 return;
             }
 
@@ -7453,7 +7453,7 @@
                 }
 
                 // Step 3: Create sound pack
-                progressText.textContent = 'Creating sound pack...';
+                progressText.textContent = 'Creating sound pax...';
                 progressPercent.textContent = '95%';
                 progressBar.style.width = '95%';
 
@@ -7481,9 +7481,9 @@
                 progressBar.style.width = '100%';
 
                 if (response.ok && data.success) {
-                    showToast(`Sound pack "${packName}" uploaded with ${totalFiles} tracks!`, 'success');
+                    showToast(`Sound pax "${packName}" uploaded with ${totalFiles} tracks!`, 'success');
                 } else {
-                    showToast(data.error || 'Failed to create sound pack', 'error');
+                    showToast(data.error || 'Failed to create sound pax', 'error');
                 }
 
             } catch (error) {
@@ -7829,7 +7829,7 @@
 
         // Delete curated pack
         async function deleteCuratedPack(packId) {
-            if (!confirm('Are you sure you want to delete this curated pack?')) return;
+            if (!confirm('Are you sure you want to delete this curated pax?')) return;
 
             try {
                 const response = await fetch(`/api/curated/${packId}`, {
@@ -7838,14 +7838,14 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('Pack deleted', 'success');
+                    showToast('Pax deleted', 'success');
                     loadCuratedPacks();
                     updateSidebarCounts();
                 } else {
                     showToast(data.error || 'Failed to delete', 'error');
                 }
             } catch (e) {
-                showToast('Failed to delete pack', 'error');
+                showToast('Failed to delete pax', 'error');
             }
         }
 
@@ -8259,7 +8259,7 @@
                 const data = await response.json();
 
                 if (data.success) {
-                    showToast('Curated pack created!', 'success');
+                    showToast('Curated pax created!', 'success');
                     closeCurateModal();
                     loadCuratedPacks();
                     updateSidebarCounts();
@@ -8269,11 +8269,11 @@
                         copyCuratedLink(data.pack.share_code);
                     }
                 } else {
-                    showToast(data.error || 'Failed to create pack', 'error');
+                    showToast(data.error || 'Failed to create pax', 'error');
                 }
             } catch (e) {
                 console.error('Error creating pack:', e);
-                showToast('Failed to create pack', 'error');
+                showToast('Failed to create pax', 'error');
             }
 
             createBtn.disabled = false;

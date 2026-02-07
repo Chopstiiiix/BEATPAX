@@ -486,7 +486,7 @@ def beatpax_beats():
         })
     except Exception as e:
         print(f"Error fetching packs: {e}")
-        return jsonify({'error': 'Failed to fetch packs'}), 500
+        return jsonify({'error': 'Failed to fetch pax'}), 500
 
 
 @app.route('/api/upload-config', methods=['GET'])
@@ -602,7 +602,7 @@ def beatpax_create_soundpack():
 
         # Validate required fields
         if not pack_name:
-            return jsonify({'error': 'Pack name is required'}), 400
+            return jsonify({'error': 'Pax name is required'}), 400
         if not genre:
             return jsonify({'error': 'Genre is required'}), 400
         if not tracks_data or len(tracks_data) == 0:
@@ -665,7 +665,7 @@ def beatpax_create_soundpack():
         import traceback
         traceback.print_exc()
         print(f"Error creating sound pack: {e}")
-        return jsonify({'error': f'Failed to create sound pack: {str(e)}'}), 500
+        return jsonify({'error': f'Failed to create sound pax: {str(e)}'}), 500
 
 
 @app.route('/api/soundpacks', methods=['GET'])
@@ -685,7 +685,7 @@ def get_soundpacks():
         })
     except Exception as e:
         print(f"Error fetching sound packs: {e}")
-        return jsonify({'error': 'Failed to fetch sound packs'}), 500
+        return jsonify({'error': 'Failed to fetch sound pax'}), 500
 
 
 @app.route('/api/upload-audio', methods=['POST'])
@@ -1214,7 +1214,7 @@ def update_soundpack(pack_id):
     try:
         pack = SoundPack.query.get(pack_id)
         if not pack:
-            return jsonify({'error': 'Sound pack not found'}), 404
+            return jsonify({'error': 'Sound pax not found'}), 404
 
         if pack.creator_id != user_id:
             return jsonify({'error': 'You can only edit your own uploads'}), 403
@@ -1245,7 +1245,7 @@ def update_soundpack(pack_id):
     except Exception as e:
         db.session.rollback()
         print(f"Error updating sound pack: {e}")
-        return jsonify({'error': 'Failed to update sound pack'}), 500
+        return jsonify({'error': 'Failed to update sound pax'}), 500
 
 
 @app.route('/api/soundpacks/<int:pack_id>', methods=['DELETE'])
@@ -1257,7 +1257,7 @@ def delete_soundpack(pack_id):
     try:
         pack = SoundPack.query.get(pack_id)
         if not pack:
-            return jsonify({'error': 'Sound pack not found'}), 404
+            return jsonify({'error': 'Sound pax not found'}), 404
 
         if pack.creator_id != user_id:
             return jsonify({'error': 'You can only delete your own uploads'}), 403
@@ -1277,7 +1277,7 @@ def delete_soundpack(pack_id):
     except Exception as e:
         db.session.rollback()
         print(f"Error deleting sound pack: {e}")
-        return jsonify({'error': 'Failed to delete sound pack'}), 500
+        return jsonify({'error': 'Failed to delete sound pax'}), 500
 
 
 @app.route('/api/tracks/<int:track_id>', methods=['PUT'])
@@ -1366,7 +1366,7 @@ def beatpax_share_pack(pack_id):
     try:
         pack = SoundPack.query.get(pack_id)
         if not pack or not pack.is_active:
-            return render_template('beatpax_share.html', pack=None, error='Sound pack not found')
+            return render_template('beatpax_share.html', pack=None, error='Sound pax not found')
 
         # Get pack data with tracks
         pack_data = pack.to_dict(include_tracks=True)
@@ -1396,14 +1396,14 @@ def beatpax_public_pack(pack_id):
     try:
         pack = SoundPack.query.get(pack_id)
         if not pack or not pack.is_active:
-            return jsonify({'error': 'Sound pack not found'}), 404
+            return jsonify({'error': 'Sound pax not found'}), 404
 
         return jsonify({
             'pack': pack.to_dict(include_tracks=True)
         })
     except Exception as e:
         print(f"Error fetching public pack: {e}")
-        return jsonify({'error': 'Failed to fetch sound pack'}), 500
+        return jsonify({'error': 'Failed to fetch sound pax'}), 500
 
 
 # =============================================================================
@@ -1506,7 +1506,7 @@ def get_curated_packs():
         })
     except Exception as e:
         print(f"Error fetching curated packs: {e}")
-        return jsonify({'error': 'Failed to fetch curated packs'}), 500
+        return jsonify({'error': 'Failed to fetch curated pax'}), 500
 
 
 @app.route('/api/curated', methods=['POST'])
@@ -1519,7 +1519,7 @@ def create_curated_pack():
         data = request.get_json()
         name = data.get('name', '').strip()
         if not name:
-            return jsonify({'error': 'Pack name is required'}), 400
+            return jsonify({'error': 'Pax name is required'}), 400
 
         track_ids = data.get('track_ids', [])
         if not track_ids:
@@ -1563,7 +1563,7 @@ def create_curated_pack():
     except Exception as e:
         db.session.rollback()
         print(f"Error creating curated pack: {e}")
-        return jsonify({'error': 'Failed to create curated pack'}), 500
+        return jsonify({'error': 'Failed to create curated pax'}), 500
 
 
 @app.route('/api/curated/<int:pack_id>', methods=['PUT'])
@@ -1575,10 +1575,10 @@ def update_curated_pack(pack_id):
     try:
         pack = CuratedPack.query.get(pack_id)
         if not pack or not pack.is_active:
-            return jsonify({'error': 'Curated pack not found'}), 404
+            return jsonify({'error': 'Curated pax not found'}), 404
 
         if pack.user_id != user_id:
-            return jsonify({'error': 'You can only edit your own packs'}), 403
+            return jsonify({'error': 'You can only edit your own pax'}), 403
 
         data = request.get_json()
 
@@ -1625,7 +1625,7 @@ def update_curated_pack(pack_id):
     except Exception as e:
         db.session.rollback()
         print(f"Error updating curated pack: {e}")
-        return jsonify({'error': 'Failed to update curated pack'}), 500
+        return jsonify({'error': 'Failed to update curated pax'}), 500
 
 
 @app.route('/api/curated/<int:pack_id>', methods=['DELETE'])
@@ -1637,10 +1637,10 @@ def delete_curated_pack(pack_id):
     try:
         pack = CuratedPack.query.get(pack_id)
         if not pack:
-            return jsonify({'error': 'Curated pack not found'}), 404
+            return jsonify({'error': 'Curated pax not found'}), 404
 
         if pack.user_id != user_id:
-            return jsonify({'error': 'You can only delete your own packs'}), 403
+            return jsonify({'error': 'You can only delete your own pax'}), 403
 
         # Soft delete
         pack.is_active = False
@@ -1653,7 +1653,7 @@ def delete_curated_pack(pack_id):
     except Exception as e:
         db.session.rollback()
         print(f"Error deleting curated pack: {e}")
-        return jsonify({'error': 'Failed to delete curated pack'}), 500
+        return jsonify({'error': 'Failed to delete curated pax'}), 500
 
 
 @app.route('/curated/<share_code>')
@@ -1662,7 +1662,7 @@ def view_curated_pack(share_code):
     try:
         pack = CuratedPack.query.filter_by(share_code=share_code, is_active=True).first()
         if not pack:
-            return render_template('beatpax_curated.html', pack=None, error='Pack not found')
+            return render_template('beatpax_curated.html', pack=None, error='Pax not found')
 
         # Increment view count
         pack.view_count += 1
@@ -1696,7 +1696,7 @@ def download_curated_pack(share_code):
     try:
         pack = CuratedPack.query.filter_by(share_code=share_code, is_active=True).first()
         if not pack:
-            return jsonify({'error': 'Pack not found'}), 404
+            return jsonify({'error': 'Pax not found'}), 404
 
         # Get track IDs from request (optional - can download specific tracks)
         data = request.get_json() or {}
@@ -1802,7 +1802,7 @@ def download_curated_pack(share_code):
     except Exception as e:
         db.session.rollback()
         print(f"Error downloading curated pack: {e}")
-        return jsonify({'error': 'Failed to download pack'}), 500
+        return jsonify({'error': 'Failed to download pax'}), 500
 
 
 # =============================================================================
@@ -2333,7 +2333,7 @@ def admin_toggle_featured(content_type, content_id):
     """Toggle featured flag on beats and packs"""
     try:
         if content_type not in ('beat', 'pack'):
-            return jsonify({'error': 'Featured only available for beats and packs'}), 400
+            return jsonify({'error': 'Featured only available for beats and pax'}), 400
 
         model = Beat if content_type == 'beat' else SoundPack
         item = model.query.get(content_id)

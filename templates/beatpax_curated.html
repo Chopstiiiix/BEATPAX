@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% if pack %}
-    <title>{{ pack.name }} - Curated Pack | Beatpax</title>
-    <meta property="og:title" content="{{ pack.name }} - Curated Pack | Beatpax">
+    <title>{{ pack.name }} - Curated Pax | Beatpax</title>
+    <meta property="og:title" content="{{ pack.name }} - Curated Pax | Beatpax">
     <meta property="og:description" content="{{ pack.track_count }} tracks curated by {{ pack.creator_name }}{% if pack.recipient_name %} for {{ pack.recipient_name }}{% endif %}">
     <meta property="og:type" content="music.playlist">
     {% if pack.cover_url %}
@@ -14,7 +14,7 @@
     {% endif %}
     <meta name="twitter:card" content="summary">
     {% else %}
-    <title>Curated Pack Not Found - Beatpax</title>
+    <title>Curated Pax Not Found - Beatpax</title>
     {% endif %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -642,8 +642,8 @@
         <!-- Error State -->
         <div class="error-container">
             <i data-lucide="folder-x" class="lucide-icon error-icon"></i>
-            <h1 class="error-title">Curated Pack Not Found</h1>
-            <p class="error-message">This pack may have been removed or the link is invalid.</p>
+            <h1 class="error-title">Curated Pax Not Found</h1>
+            <p class="error-message">This pax may have been removed or the link is invalid.</p>
             <a href="/" class="btn btn-primary">Browse Beatpax</a>
         </div>
 
@@ -652,7 +652,7 @@
         <div class="pack-header">
             <div class="curated-badge">
                 <i data-lucide="sparkles" class="lucide-icon"></i>
-                Curated Pack
+                Curated Pax
             </div>
             {% if pack.cover_url %}
             <img src="{{ pack.cover_url }}" alt="{{ pack.name }}" class="pack-cover">
@@ -742,7 +742,7 @@
                 </button>
             </div>
             {% else %}
-            <h3 class="download-title">Download Pack</h3>
+            <h3 class="download-title">Download Pax</h3>
             <p class="download-text">Get all {{ pack.track_count }} tracks for {{ pack.track_count }} tokens.</p>
             {% if is_logged_in %}
             <div class="wallet-info">
