@@ -2,10 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Beatpax - Beat Marketplace</title>
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
     <style>
+        :root {
+            --topbar-height: 80px;
+            --player-height: 80px;
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -358,13 +367,15 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 80px;
+            height: calc(var(--topbar-height) + var(--sat));
+            padding-top: var(--sat);
             background: #000000;
             border-bottom: 1px solid #2d2d2d;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 24px;
+            padding-left: calc(24px + var(--sal));
+            padding-right: calc(24px + var(--sar));
             z-index: 200;
         }
 
@@ -499,7 +510,7 @@
 
         /* Main Content */
         .main-content {
-            padding-top: 80px;
+            padding-top: calc(var(--topbar-height) + var(--sat));
             min-height: 100vh;
         }
 
@@ -1353,9 +1364,18 @@
         }
 
         @media (max-width: 700px) {
+            .pack-player-bar {
+                padding-bottom: var(--sab);
+            }
+
             .pack-player-content {
                 flex-wrap: wrap;
                 gap: 12px;
+            }
+
+            .pack-player-cover {
+                width: 40px;
+                height: 40px;
             }
 
             .pack-player-track {
@@ -2559,12 +2579,14 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 80px;
+            height: calc(var(--player-height) + var(--sab));
+            padding-bottom: var(--sab);
             background: #0d0d0d;
             border-top: 1px solid #2d2d2d;
             display: none;
             align-items: center;
-            padding: 0 24px;
+            padding-left: calc(24px + var(--sal));
+            padding-right: calc(24px + var(--sar));
             gap: 20px;
             z-index: 150;
         }
@@ -2786,12 +2808,87 @@
 
         /* Responsive */
         @media (max-width: 768px) {
+            :root {
+                --topbar-height: 60px;
+            }
+
             .top-bar-center {
                 display: none;
             }
 
+            .top-bar {
+                padding-left: calc(12px + var(--sal));
+                padding-right: calc(12px + var(--sar));
+            }
+
+            .logo img {
+                height: 70px;
+            }
+
+            .top-bar-right {
+                gap: 8px;
+            }
+
+            /* Icon-only buttons on mobile */
+            #buyTokensBtn,
+            #uploadBtn {
+                font-size: 0;
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                border-radius: 50%;
+                justify-content: center;
+                gap: 0;
+            }
+            #buyTokensBtn .lucide-icon,
+            #uploadBtn .lucide-icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            .token-display {
+                padding: 6px 8px;
+                gap: 4px;
+            }
+
+            .token-amount {
+                font-size: 13px;
+            }
+
+            /* Content adjusts when player is active */
+            .main-content.player-active {
+                padding-bottom: calc(var(--player-height) + var(--sab) + 16px);
+            }
+
+            /* Sidebar toggle above player */
+            .sidebar-toggle {
+                bottom: calc(var(--player-height) + var(--sab) + 16px);
+            }
+
+            /* Toast above player */
+            .toast {
+                bottom: calc(var(--player-height) + var(--sab) + 16px);
+            }
+
+            .hero-banner {
+                padding: 48px 16px;
+            }
+
             .hero-title {
                 font-size: 32px;
+            }
+
+            .section {
+                padding: 24px 16px;
+            }
+
+            /* Touch-friendly genre pills */
+            .genre-pills {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .genre-pills::-webkit-scrollbar {
+                display: none;
             }
 
             .beat-grid {
@@ -2799,20 +2896,82 @@
                 gap: 12px;
             }
 
+            /* Beat cards: always-visible play button */
+            .beat-play-overlay {
+                opacity: 1;
+                background: transparent;
+                align-items: flex-end;
+                justify-content: flex-end;
+                padding: 8px;
+            }
+
+            .play-btn {
+                width: 44px;
+                height: 44px;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .beat-card:hover {
+                transform: none;
+            }
+
             .lower-grid {
                 padding: 20px;
             }
 
             .audio-player {
-                padding: 0 16px;
+                padding-left: calc(16px + var(--sal));
+                padding-right: calc(16px + var(--sar));
             }
 
             .player-progress {
                 display: none;
             }
+
+            /* iOS input zoom fix */
+            input, select, textarea {
+                font-size: 16px !important;
+            }
+
+            /* Stack form rows */
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            /* Constrain profile dropdown */
+            .profile-dropdown {
+                right: 0;
+                max-width: calc(100vw - 24px);
+            }
         }
 
         @media (max-width: 480px) {
+            .logo img {
+                height: 50px;
+            }
+
+            .top-bar-right {
+                gap: 6px;
+            }
+
+            .profile-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .hero-banner {
+                padding: 36px 12px;
+            }
+
+            .hero-title {
+                font-size: 24px;
+            }
+
+            .section {
+                padding: 16px 12px;
+            }
+
             .beat-grid {
                 grid-template-columns: 1fr;
             }
@@ -2825,6 +2984,41 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            /* Compact audio player */
+            .player-cover {
+                width: 44px;
+                height: 44px;
+            }
+
+            .player-info {
+                min-width: 120px;
+                gap: 8px;
+            }
+
+            .player-actions {
+                display: none;
+            }
+
+            .play-btn {
+                width: 36px;
+                height: 36px;
+            }
+
+            .play-btn .lucide-icon {
+                width: 18px;
+                height: 18px;
+            }
+
+            /* Pack detail compact */
+            .pack-detail-cover {
+                width: 160px;
+                height: 160px;
+            }
+
+            .pack-detail-actions {
+                flex-wrap: wrap;
+            }
         }
 
         /* ============================================
@@ -2833,9 +3027,9 @@
         .beatpax-sidebar {
             position: fixed;
             left: 0;
-            top: 80px;
+            top: calc(var(--topbar-height) + var(--sat));
             width: 240px;
-            height: calc(100vh - 80px);
+            height: calc(100vh - var(--topbar-height) - var(--sat));
             background: #0a0a0a;
             border-right: 1px solid #2d2d2d;
             z-index: 90;
@@ -2954,7 +3148,7 @@
 
         .sidebar-view-panel {
             position: fixed;
-            top: 80px;
+            top: calc(var(--topbar-height) + var(--sat));
             left: 240px;
             right: 0;
             bottom: 0;
@@ -4540,6 +4734,47 @@
             width: 16px;
             height: 16px;
         }
+
+        /* Touch devices */
+        @media (hover: none) {
+            .beat-play-overlay {
+                opacity: 1;
+                background: transparent;
+                align-items: flex-end;
+                justify-content: flex-end;
+                padding: 8px;
+                pointer-events: none;
+            }
+
+            .beat-play-overlay .play-btn {
+                pointer-events: auto;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            }
+
+            .beat-card:hover {
+                transform: none;
+            }
+
+            .genre-pill:hover {
+                transform: none;
+            }
+
+            /* 44px minimum tap targets (Apple HIG) */
+            .sidebar-nav-item {
+                min-height: 44px;
+            }
+
+            .genre-pill {
+                min-height: 44px;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .player-btn {
+                min-width: 44px;
+                min-height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -5473,27 +5708,33 @@
         // Upload Panel
         document.getElementById('uploadBtn').addEventListener('click', () => {
             uploadPanel.classList.add('active');
+            lockScroll();
         });
 
         document.getElementById('heroUploadBtn').addEventListener('click', () => {
             uploadPanel.classList.add('active');
+            lockScroll();
         });
 
         document.getElementById('closeUpload').addEventListener('click', () => {
             uploadPanel.classList.remove('active');
+            unlockScroll();
         });
 
         // Wallet Panel
         document.getElementById('walletBtn').addEventListener('click', () => {
             walletPanel.classList.add('active');
+            lockScroll();
         });
 
         document.getElementById('buyTokensBtn').addEventListener('click', () => {
             walletPanel.classList.add('active');
+            lockScroll();
         });
 
         document.getElementById('closeWallet').addEventListener('click', () => {
             walletPanel.classList.remove('active');
+            unlockScroll();
         });
 
         // My Uploads Panel
@@ -5503,11 +5744,13 @@
         // Function to open My Uploads panel (called from sidebar)
         function openMyUploadsPanel() {
             myUploadsPanel.classList.add('active');
+            lockScroll();
             loadMyUploads();
         }
 
         document.getElementById('closeMyUploads').addEventListener('click', () => {
             myUploadsPanel.classList.remove('active');
+            unlockScroll();
         });
 
         document.getElementById('closeEditPack').addEventListener('click', () => {
@@ -5521,6 +5764,7 @@
         myUploadsPanel.addEventListener('click', (e) => {
             if (e.target === myUploadsPanel) {
                 myUploadsPanel.classList.remove('active');
+                unlockScroll();
             }
         });
 
@@ -5840,6 +6084,7 @@
         uploadPanel.addEventListener('click', (e) => {
             if (e.target === uploadPanel) {
                 uploadPanel.classList.remove('active');
+                unlockScroll();
             }
         });
 
@@ -6039,6 +6284,17 @@
         });
 
         // Toast notification
+        // Mobile scroll lock for modals
+        let scrollLockCount = 0;
+        function lockScroll() {
+            scrollLockCount++;
+            document.body.style.overflow = 'hidden';
+        }
+        function unlockScroll() {
+            scrollLockCount = Math.max(0, scrollLockCount - 1);
+            if (scrollLockCount === 0) document.body.style.overflow = '';
+        }
+
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
@@ -6825,6 +7081,7 @@
 
                 // Show player
                 audioPlayer.classList.add('active');
+                document.querySelector('.main-content')?.classList.add('player-active');
 
                 updatePlayPauseIcon();
 
@@ -7135,6 +7392,7 @@
             // Reset form
             setTimeout(() => {
                 uploadPanel.classList.remove('active');
+                unlockScroll();
                 form.reset();
                 resetTrackAttachment();
                 document.getElementById('coverFileName').textContent = '';
@@ -7551,6 +7809,7 @@
         // Open curate modal
         async function openCurateModal() {
             document.getElementById('curateModal').classList.add('active');
+            lockScroll();
             selectedCurateTracks.clear();
             curateUploadedFiles = [];
             curateSource = 'upload';
@@ -7582,6 +7841,7 @@
         // Close curate modal
         function closeCurateModal() {
             document.getElementById('curateModal').classList.remove('active');
+            unlockScroll();
             curateUploadedFiles = [];
         }
 
@@ -7992,6 +8252,7 @@
         // Open stems create modal
         function openStemsModal() {
             document.getElementById('stemsModal').classList.add('active');
+            lockScroll();
             stemsUploadedFiles = [];
             document.getElementById('stemsProjectName').value = '';
             document.getElementById('stemsDescription').value = '';
@@ -8007,6 +8268,7 @@
         // Close stems create modal
         function closeStemsModal() {
             document.getElementById('stemsModal').classList.remove('active');
+            unlockScroll();
             stemsUploadedFiles = [];
         }
 
@@ -8215,12 +8477,14 @@
             document.getElementById('stemsShareLinkInput').value = url;
             document.getElementById('stemsEmailInput').value = '';
             document.getElementById('stemsShareModal').classList.add('active');
+            lockScroll();
             lucide.createIcons();
         }
 
         // Close stems share modal
         function closeStemsShareModal() {
             document.getElementById('stemsShareModal').classList.remove('active');
+            unlockScroll();
             currentShareProjectId = null;
         }
 
@@ -8337,6 +8601,7 @@
                     }
 
                     document.getElementById('profileModal').classList.add('active');
+                    lockScroll();
                     lucide.createIcons();
                 } else {
                     showToast(data.error || 'Failed to load profile', 'error');
@@ -8348,6 +8613,7 @@
 
         function closeProfileModal() {
             document.getElementById('profileModal').classList.remove('active');
+            unlockScroll();
         }
 
         async function saveProfile() {
