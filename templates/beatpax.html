@@ -459,6 +459,10 @@
             background: #2d2d2d;
         }
 
+        .token-display:active {
+            transform: scale(0.95);
+        }
+
         .token-display .lucide-icon {
             width: 18px;
             height: 18px;
@@ -493,6 +497,11 @@
             background: #e0e0e0;
         }
 
+        .btn-primary:active {
+            transform: scale(0.95);
+            background: #ccc;
+        }
+
         .btn-secondary {
             background: #2d2d2d;
             color: #ffffff;
@@ -501,6 +510,11 @@
 
         .btn-secondary:hover {
             background: #3a3a3a;
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.95);
+            background: #4a4a4a;
         }
 
         .btn .lucide-icon {
@@ -669,6 +683,10 @@
             transform: translateY(-4px);
         }
 
+        .beat-card:active {
+            transform: scale(0.98);
+        }
+
         .beat-cover {
             aspect-ratio: 1;
             background: #1a1a1a;
@@ -726,6 +744,10 @@
             transform: scale(1.1);
         }
 
+        .play-btn:active {
+            transform: scale(0.9);
+        }
+
         .play-btn .lucide-icon {
             width: 24px;
             height: 24px;
@@ -752,6 +774,10 @@
         .share-btn:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: scale(1.1);
+        }
+
+        .share-btn:active {
+            transform: scale(0.9);
         }
 
         .share-btn .lucide-icon {
@@ -1005,6 +1031,10 @@
             background: #e0e0e0;
         }
 
+        .pack-action-btn.primary:active {
+            transform: scale(0.95);
+        }
+
         .pack-action-btn.secondary {
             background: #1a1a1a;
             color: #fff;
@@ -1013,6 +1043,10 @@
 
         .pack-action-btn.secondary:hover {
             background: #2d2d2d;
+        }
+
+        .pack-action-btn.secondary:active {
+            transform: scale(0.95);
         }
 
         .pack-action-btn .lucide-icon {
@@ -1052,6 +1086,10 @@
             background: #1a1a1a;
         }
 
+        .pack-track-item:active {
+            background: #222;
+        }
+
         .pack-track-item.playing {
             background: #1a1a1a;
         }
@@ -1078,6 +1116,11 @@
             border: none;
             border-radius: 50%;
             cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .pack-track-play:active {
+            transform: scale(0.85);
         }
 
         .pack-track-item:hover .pack-track-play,
@@ -1142,6 +1185,10 @@
         .track-action-btn:hover {
             background: #2d2d2d;
             color: #fff;
+        }
+
+        .track-action-btn:active {
+            transform: scale(0.9);
         }
 
         .like-btn.liked {
@@ -1352,6 +1399,10 @@
         .player-action-btn:hover {
             color: #fff;
             background: #2d2d2d;
+        }
+
+        .player-action-btn:active {
+            transform: scale(0.9);
         }
 
         .player-action-btn.liked {
@@ -2665,6 +2716,10 @@
             color: #4a9eff;
         }
 
+        .player-btn:active {
+            transform: scale(0.9);
+        }
+
         .player-btn .lucide-icon {
             width: 24px;
             height: 24px;
@@ -3321,6 +3376,10 @@
 
         .sidebar-cover-play-btn:hover {
             transform: scale(1.1);
+        }
+
+        .sidebar-cover-play-btn:active {
+            transform: scale(0.9);
         }
 
         .sidebar-cover-play-btn .lucide-icon {
@@ -4737,6 +4796,7 @@
 
         /* Touch devices */
         @media (hover: none) {
+            /* Beat card overlay — always visible on touch */
             .beat-play-overlay {
                 opacity: 1;
                 background: transparent;
@@ -4746,7 +4806,8 @@
                 pointer-events: none;
             }
 
-            .beat-play-overlay .play-btn {
+            .beat-play-overlay .play-btn,
+            .beat-play-overlay .share-btn {
                 pointer-events: auto;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
             }
@@ -4757,6 +4818,30 @@
 
             .genre-pill:hover {
                 transform: none;
+            }
+
+            /* Pack detail track list — always show play button */
+            .pack-track-play {
+                display: flex;
+            }
+
+            .pack-track-num {
+                display: none;
+            }
+
+            .pack-track-play,
+            .pack-track-item {
+                min-height: 44px;
+            }
+
+            /* Sidebar track play overlay — always visible */
+            .sidebar-track-cover-overlay {
+                opacity: 1;
+            }
+
+            .sidebar-cover-play-btn {
+                min-width: 44px;
+                min-height: 44px;
             }
 
             /* 44px minimum tap targets (Apple HIG) */
@@ -4771,6 +4856,13 @@
             }
 
             .player-btn {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .player-action-btn,
+            .pack-action-btn,
+            .track-action-btn {
                 min-width: 44px;
                 min-height: 44px;
             }
@@ -6404,7 +6496,7 @@
             const trackList = document.getElementById('packTrackList');
             if (pack.tracks && pack.tracks.length > 0) {
                 trackList.innerHTML = pack.tracks.map((track, index) => `
-                    <div class="pack-track-item" data-track-index="${index}" data-track-id="${track.id}">
+                    <div class="pack-track-item" data-track-index="${index}" data-track-id="${track.id}" onclick="toggleTrackPlayPause(${packId}, ${index})">
                         <span class="pack-track-num">${index + 1}</span>
                         <div class="playing-indicator" style="display: none;">
                             <span></span><span></span><span></span><span></span>
@@ -6577,6 +6669,9 @@
             const pack = packsData[packId];
             if (!pack || !pack.tracks || !pack.tracks[trackIndex]) return;
 
+            // Dismiss old audio player if it was showing
+            audioPlayer.classList.remove('active');
+
             currentPackId = packId;
             currentPackTrackIndex = trackIndex;
             currentSidebarBeatId = null;
@@ -6698,6 +6793,9 @@
                 // Different track — start playing
                 currentSidebarBeatId = beatId;
                 currentPackId = null;
+
+                // Dismiss old audio player if it was showing
+                audioPlayer.classList.remove('active');
 
                 audio.src = audioUrl;
                 audio.play();
@@ -7037,6 +7135,10 @@
 
         async function playBeat(beatId) {
             try {
+                // Stop any existing playback and dismiss pack player
+                stopPlayback();
+                document.getElementById('packPlayerBar').classList.remove('active');
+
                 // Record play
                 await fetch(`/api/beats/${beatId}/play`, { method: 'POST' });
 
