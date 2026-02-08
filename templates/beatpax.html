@@ -6474,6 +6474,7 @@
         let likedTracks = new Set();
         let isPlaying = false;
         let currentSidebarBeatId = null;
+        let isSidebarPlayback = false; // true when playing from liked/downloaded sections
 
         // Open pack detail modal
         function openPackDetail(packId) {
@@ -6613,15 +6614,19 @@
         // Close pack detail modal
         document.getElementById('closePackDetail').addEventListener('click', () => {
             document.getElementById('packDetailPanel').classList.remove('active');
-            document.getElementById('packPlayerBar').classList.remove('active');
-            stopPlayback();
+            if (!isSidebarPlayback) {
+                document.getElementById('packPlayerBar').classList.remove('active');
+                stopPlayback();
+            }
         });
 
         document.getElementById('packDetailPanel').addEventListener('click', (e) => {
             if (e.target.id === 'packDetailPanel') {
                 document.getElementById('packDetailPanel').classList.remove('active');
-                document.getElementById('packPlayerBar').classList.remove('active');
-                stopPlayback();
+                if (!isSidebarPlayback) {
+                    document.getElementById('packPlayerBar').classList.remove('active');
+                    stopPlayback();
+                }
             }
         });
 
@@ -6675,6 +6680,7 @@
             currentPackId = packId;
             currentPackTrackIndex = trackIndex;
             currentSidebarBeatId = null;
+            isSidebarPlayback = false;
             const track = pack.tracks[trackIndex];
 
             // Update playing state in track list
@@ -6727,6 +6733,7 @@
             audio.currentTime = 0;
             isPlaying = false;
             currentSidebarBeatId = null;
+            isSidebarPlayback = false;
             updatePlayPauseButton();
             updatePackCardPlayButtons();
             updateSidebarTrackPlayButtons();
@@ -6793,6 +6800,7 @@
                 // Different track — start playing
                 currentSidebarBeatId = beatId;
                 currentPackId = null;
+                isSidebarPlayback = true;
 
                 // Dismiss old audio player if it was showing
                 audioPlayer.classList.remove('active');
