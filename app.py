@@ -134,7 +134,7 @@ def register():
     if request.method == 'POST':
         first_name = request.form.get('first_name', '').strip()
         surname = request.form.get('surname', '').strip()
-        username = request.form.get('username', '').strip()
+        username = request.form.get('username', '').strip().lower()
         email = request.form.get('email', '').strip().lower()
         phone_number = request.form.get('phone_number', '').strip()
         age = request.form.get('age', '').strip()
@@ -142,8 +142,14 @@ def register():
         confirm_password = request.form.get('confirm_password', '')
 
         # Validation
-        if not all([first_name, surname, email, phone_number, age, password, confirm_password]):
+        if not all([first_name, surname, username, email, phone_number, age, password, confirm_password]):
             return render_template('register.html', error='All fields are required')
+
+        if len(username) < 3:
+            return render_template('register.html', error='Username must be at least 3 characters')
+
+        if not username.replace('_', '').replace('.', '').isalnum():
+            return render_template('register.html', error='Username can only contain letters, numbers, underscores, and periods')
 
         if password != confirm_password:
             return render_template('register.html', error='Passwords do not match')
@@ -172,6 +178,11 @@ def register():
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             return render_template('register.html', error='Email already registered. Please login instead.')
+
+        # Check if username already exists
+        existing_username = User.query.filter_by(username=username).first()
+        if existing_username:
+            return render_template('register.html', error='Username already taken. Please choose another.')
 
         # Create new user
         try:
@@ -226,13 +237,17 @@ def login():
         return redirect(url_for('beatpax'))
 
     if request.method == 'POST':
-        email = request.form.get('email', '').strip().lower()
+        login_id = request.form.get('login_id', '').strip().lower()
         password = request.form.get('password', '')
 
-        if not email or not password:
-            return render_template('login.html', error='Email and password are required')
+        if not login_id or not password:
+            return render_template('login.html', error='Email/username and password are required')
 
-        user = User.query.filter_by(email=email).first()
+        # Try to find user by email or username
+        if '@' in login_id:
+            user = User.query.filter_by(email=login_id).first()
+        else:
+            user = User.query.filter_by(username=login_id).first()
 
         if user and user.check_password(password):
             # Update last login
@@ -249,7 +264,7 @@ def login():
 
             return redirect(url_for('beatpax'))
         else:
-            return render_template('login.html', error='Invalid email or password')
+            return render_template('login.html', error='Invalid email/username or password')
 
     return render_template('login.html')
 
@@ -544,13 +559,14 @@ def beatpax_create_beat():
         if not audio_url:
             return jsonify({'error': 'Audio URL is required'}), 400
 
-        # Validate URL is from Vercel Blob (allow test URLs in development)
-        is_valid_url = (
+        # Validate URL is from Vercel Blob or local uploads
+        is_blob_url = (
             audio_url.startswith('https://') and
             ('blob.vercel-storage.com' in audio_url or 'vercel-storage.com' in audio_url)
         )
-        if not is_valid_url:
-            return jsonify({'error': 'Invalid audio URL. Must be a Vercel Blob URL.'}), 400
+        is_local_url = audio_url.startswith('/uploads/')
+        if not is_blob_url and not is_local_url:
+            return jsonify({'error': 'Invalid audio URL.'}), 400
 
         # Validate token cost
         token_cost = max(3, min(20, int(token_cost)))
@@ -2388,6 +2404,12 @@ with app.app_context():
         if 'username_changed_at' not in existing_columns:
             conn.execute(text('ALTER TABLE users ADD COLUMN username_changed_at TIMESTAMP'))
             conn.commit()
+
+
+# Serve locally uploaded files (development only)
+@app.route('/uploads/<path:filepath>')
+def serve_upload(filepath):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filepath)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001)

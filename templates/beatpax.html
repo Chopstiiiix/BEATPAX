@@ -5101,7 +5101,7 @@
                         <div class="curate-upload-area" id="curateUploadArea" onclick="document.getElementById('curateFileInput').click()">
                             <i data-lucide="upload-cloud" class="lucide-icon"></i>
                             <h4>Drop audio files here</h4>
-                            <p>or click to browse (MP3, WAV, M4A)</p>
+                            <p>or click to browse (MP3, WAV, FLAC, M4A)</p>
                             <input type="file" id="curateFileInput" accept="audio/*" multiple>
                         </div>
                         <div class="curate-uploaded-files" id="curateUploadedFiles" style="display: none;"></div>
@@ -5437,7 +5437,7 @@
                             <i data-lucide="image" class="lucide-icon"></i>
                             <p>Click to upload cover</p>
                             <p class="file-name" id="coverFileName"></p>
-                            <input type="file" name="cover" accept=".jpg,.jpeg,.png,.webp" required>
+                            <input type="file" name="cover" accept=".jpg,.jpeg,.png,.webp,.gif" required>
                         </div>
                     </div>
 
@@ -7408,10 +7408,17 @@
                     const coverPath = `packs/covers/${generateUniqueFilename(coverFile.name)}`;
                     coverUrl = await uploadToBlob(coverFile, coverPath);
                 } else {
-                    // Server upload for cover - we'll handle this differently
+                    // Server upload for cover
                     const coverFormData = new FormData();
-                    coverFormData.append('cover', coverFile);
-                    // For now, we'll upload cover with the pack creation
+                    coverFormData.append('image', coverFile);
+                    const coverRes = await fetch('/api/upload-image', {
+                        method: 'POST',
+                        body: coverFormData
+                    });
+                    if (coverRes.ok) {
+                        const coverData = await coverRes.json();
+                        coverUrl = coverData.url;
+                    }
                 }
 
                 // Step 2: Upload audio files
@@ -7864,10 +7871,10 @@
                 return;
             }
 
-            // Check file size (max 4MB for Vercel serverless functions)
-            const maxSize = 4 * 1024 * 1024; // 4MB
+            // Check file size (max 10MB, matching server-side limit)
+            const maxSize = 10 * 1024 * 1024; // 10MB
             if (file.size > maxSize) {
-                showToast('Image too large. Maximum 4MB allowed.', 'error');
+                showToast('Image too large. Maximum 10MB allowed.', 'error');
                 return;
             }
 
@@ -7994,8 +8001,8 @@
 
         // Handle uploaded files
         function handleCurateFiles(files) {
-            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/mp4', 'audio/x-wav'];
-            const maxSize = 4 * 1024 * 1024; // 4MB limit for serverless functions
+            const allowedTypes = ['audio/mpeg', 'audio/wav', 'audio/mp3', 'audio/x-m4a', 'audio/mp4', 'audio/x-wav', 'audio/flac', 'audio/x-flac', 'audio/aac'];
+            const maxSize = uploadConfig.max_file_size || (50 * 1024 * 1024);
 
             for (const file of files) {
                 // Check file size
