@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In - Beatpax</title>
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    {% if google_client_id %}
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    {% endif %}
     <style>
         * {
             margin: 0;
@@ -268,6 +271,27 @@
 
             <div class="divider"><span>or</span></div>
 
+            {% if google_client_id %}
+            <div id="g_id_onload"
+                 data-client_id="{{ google_client_id }}"
+                 data-callback="handleGoogleCredential"
+                 data-auto_prompt="false">
+            </div>
+            <div style="display:flex;justify-content:center;margin-bottom:20px;">
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-shape="pill"
+                     data-theme="filled_black"
+                     data-text="signin_with"
+                     data-size="large"
+                     data-width="300">
+                </div>
+            </div>
+            <form id="google-auth-form" method="POST" action="/auth/google" style="display:none;">
+                <input type="hidden" name="credential" id="google-credential">
+            </form>
+            {% endif %}
+
             <div class="register-link">
                 Don't have an account? <a href="/register">Create one</a>
             </div>
@@ -276,6 +300,10 @@
 
     <script>
         lucide.createIcons();
+        function handleGoogleCredential(response) {
+            document.getElementById('google-credential').value = response.credential;
+            document.getElementById('google-auth-form').submit();
+        }
     </script>
 </body>
 </html>

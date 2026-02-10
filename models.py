@@ -16,7 +16,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     phone_number = db.Column(db.String(20), nullable=False)
     age = db.Column(db.Integer, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=True)
+    google_id = db.Column(db.String(255), unique=True, nullable=True)
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime)
@@ -27,6 +28,8 @@ class User(db.Model):
 
     def check_password(self, password):
         """Verify password"""
+        if self.password_hash is None:
+            return False
         return check_password_hash(self.password_hash, password)
 
     def to_dict(self):

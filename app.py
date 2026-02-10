@@ -19,6 +19,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "your-secret-key-here-change-in-production")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", "")
 
 # Configure database URI
 # Supports both PostgreSQL (production) and SQLite (local development)
@@ -125,6 +126,10 @@ def admin_required(f):
             return redirect(url_for('beatpax'))
         return f(*args, **kwargs)
     return decorated_function
+
+@app.context_processor
+def inject_google_client_id():
+    return dict(google_client_id=GOOGLE_CLIENT_ID)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -249,6 +254,9 @@ def login():
         else:
             user = User.query.filter_by(username=login_id).first()
 
+        if user and user.password_hash is None and user.google_id:
+            return render_template('login.html', error='This account uses Google sign-in. Please use the "Sign in with Google" button below.')
+
         if user and user.check_password(password):
             # Update last login
             user.last_login = datetime.utcnow()
@@ -272,6 +280,85 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/auth/google', methods=['POST'])
+def google_auth():
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as google_requests
+
+    credential = request.form.get('credential', '')
+    if not credential:
+        return redirect(url_for('login'))
+
+    try:
+        idinfo = id_token.verify_oauth2_token(
+            credential, google_requests.Request(), GOOGLE_CLIENT_ID
+        )
+
+        google_id = idinfo['sub']
+        email = idinfo.get('email', '').lower()
+        first_name = idinfo.get('given_name', '')
+        surname = idinfo.get('family_name', '')
+
+        if not email:
+            return render_template('login.html', error='Google account has no email address')
+
+        # Look up user by google_id first, then by email
+        user = User.query.filter_by(google_id=google_id).first()
+
+        if not user:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                # Link existing account to Google
+                user.google_id = google_id
+                db.session.commit()
+
+        if not user:
+            # Create new user
+            user = User(
+                first_name=first_name or 'User',
+                surname=surname or '',
+                email=email,
+                phone_number='',
+                age=0,
+                google_id=google_id
+            )
+            db.session.add(user)
+            db.session.flush()
+
+            wallet = Wallet(user_id=user.id, balance=50)
+            db.session.add(wallet)
+
+            bonus_transaction = Transaction(
+                user_id=user.id,
+                transaction_type='bonus',
+                amount=50,
+                balance_after=50,
+                reference_type='signup_bonus',
+                description='Welcome bonus tokens'
+            )
+            db.session.add(bonus_transaction)
+            db.session.commit()
+
+        # Update last login
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        # Set session
+        session['authenticated'] = True
+        session['user_id'] = user.id
+        session['user_name'] = f"{user.first_name} {user.surname}"
+        session['user_handle'] = user.username if user.username else None
+        session['session_id'] = str(uuid.uuid4())
+        session['is_admin'] = user.is_admin or False
+
+        return redirect(url_for('beatpax'))
+
+    except ValueError:
+        return render_template('login.html', error='Invalid Google sign-in. Please try again.')
+    except Exception as e:
+        print(f"Google auth error: {e}")
+        return render_template('login.html', error='An error occurred during Google sign-in. Please try again.')
 
 # =============================================================================
 # Beatpax Helpers
@@ -2404,6 +2491,9 @@ with app.app_context():
             conn.commit()
         if 'username_changed_at' not in existing_columns:
             conn.execute(text('ALTER TABLE users ADD COLUMN username_changed_at TIMESTAMP'))
+            conn.commit()
+        if 'google_id' not in existing_columns:
+            conn.execute(text('ALTER TABLE users ADD COLUMN google_id VARCHAR(255) UNIQUE'))
             conn.commit()
 
 
