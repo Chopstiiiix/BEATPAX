@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beatpax - The Beat Huntingplace for Creators</title>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Sohne", Helvetica, Arial, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           AMBIENT BACKGROUND
+           ============================================ */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-bg::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 50%;
+            height: 60%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.08) 0%, transparent 70%);
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 40%;
+            height: 50%;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.05) 0%, transparent 70%);
+        }
+
+        /* ============================================
+           NAVBAR
+           ============================================ */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.3s ease;
+        }
+
+        .navbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .navbar-logo img {
+            width: 52px;
+            height: 52px;
+            object-fit: contain;
+        }
+
+        .navbar-logo span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-links a {
+            text-decoration: none;
+            color: #999;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-links a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-login {
+            text-decoration: none;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-login:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        .btn-signup {
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 10px 24px;
+            border-radius: 12px;
+            background: #dc2626;
+            transition: all 0.3s ease;
+        }
+
+        .btn-signup:hover {
+            background: #ef4444;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 24px 80px;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 100px;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            color: #ef4444;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 32px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .hero-title {
+            font-size: clamp(2.8rem, 7vw, 5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            max-width: 800px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .hero-title .gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #888888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-title .accent-text {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 50%, #b91c1c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.2vw, 1.25rem);
+            color: #888;
+            max-width: 560px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: center;
+            animation: fadeInUp 0.6s ease-out 0.3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 16px 32px;
+            border-radius: 14px;
+            background: #dc2626;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: #ef4444;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(220, 38, 38, 0.35);
+        }
+
+        .btn-primary i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: #e0e0e0;
+            font-size: 1rem;
+            font-weight: 500;
+            padding: 16px 32px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+
+        .btn-secondary i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .hero-visual {
+            margin-top: 72px;
+            width: 100%;
+            max-width: 900px;
+            animation: fadeInUp 0.8s ease-out 0.4s both;
+        }
+
+        .hero-mockup {
+            width: 100%;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 120px rgba(220, 38, 38, 0.06);
+            overflow: hidden;
+        }
+
+        .hero-mockup img {
+            width: 100%;
+            display: block;
+        }
+
+        /* Floating waveform decoration */
+        .hero-wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to top, #000000, transparent);
+            pointer-events: none;
+        }
+
+        /* ============================================
+           STATS BAR
+           ============================================ */
+        .stats-bar {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 48px;
+            padding: 48px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #ffffff 0%, #999999 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================
+           FEATURES SECTION
+           ============================================ */
+        .section {
+            position: relative;
+            z-index: 1;
+            padding: 120px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 72px;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: #ef4444;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+        }
+
+        .section-subtitle {
+            color: #777;
+            font-size: 1.1rem;
+            max-width: 520px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 36px 28px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: rgba(220, 38, 38, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: #ef4444;
+        }
+
+        .feature-icon i {
+            width: 22px;
+            height: 22px;
+        }
+
+        .feature-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .feature-desc {
+            color: #777;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           HOW IT WORKS
+           ============================================ */
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            position: relative;
+        }
+
+        .steps-grid::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(220, 38, 38, 0.3), transparent);
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: rgba(220, 38, 38, 0.15);
+            border: 2px solid rgba(220, 38, 38, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ef4444;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .step-desc {
+            color: #777;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            max-width: 280px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           SHOWCASE SECTION
+           ============================================ */
+        .showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .showcase-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 40px 32px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.3s ease;
+        }
+
+        .showcase-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .showcase-icon {
+            flex-shrink: 0;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(220, 38, 38, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ef4444;
+        }
+
+        .showcase-icon i {
+            width: 20px;
+            height: 20px;
+        }
+
+        .showcase-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .showcase-desc {
+            color: #777;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* ============================================
+           CTA SECTION
+           ============================================ */
+        .cta-section {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 120px 24px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cta-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(220, 38, 38, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -1.5px;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        .cta-subtitle {
+            color: #777;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        .cta-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 48px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .footer-left img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .footer-left span {
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            color: #555;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            color: #ffffff;
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 900px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps-grid::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .navbar {
+                padding: 14px 20px;
+            }
+
+            .navbar-links {
+                display: none;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .showcase-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 100px 20px 60px;
+            }
+
+            .hero-title {
+                letter-spacing: -1px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .hero-actions .btn-primary,
+            .hero-actions .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-bar {
+                gap: 32px;
+            }
+
+            .stat-number {
+                font-size: 1.8rem;
+            }
+
+            .footer {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+                padding: 40px 20px;
+            }
+
+            .cta-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .cta-actions .btn-primary,
+            .cta-actions .btn-secondary {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .nav-actions .btn-login {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <a href="/" class="navbar-logo">
+            <img src="{{ url_for('static', filename='images/beatpax-logo.png') }}" alt="Beatpax">
+            <span>Beatpax</span>
+        </a>
+
+        <div class="navbar-links">
+            <a href="#features">Features</a>
+            <a href="#how-it-works">How It Works</a>
+            <a href="#creators">For Creators</a>
+        </div>
+
+        <div class="nav-actions">
+            <a href="/login" class="btn-login">Log in</a>
+            <a href="/register" class="btn-signup">Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-badge">
+            Beat Huntingplace
+        </div>
+
+        <h1 class="hero-title">
+            <span class="gradient-text">Discover, Create &</span><br>
+            <span class="accent-text">Share Beats</span>
+        </h1>
+
+        <p class="hero-subtitle">
+            The all-in-one platform for music producers. Explore sound pax, curate collections, collaborate on stems, and build your sound.
+        </p>
+
+        <div class="hero-actions">
+            <a href="/register" class="btn-primary">
+                Get Started Free
+                <i data-lucide="arrow-right"></i>
+            </a>
+            <a href="#features" class="btn-secondary">
+                <i data-lucide="play-circle"></i>
+                See How It Works
+            </a>
+        </div>
+
+        <div class="hero-visual">
+            <div class="hero-mockup">
+                <img src="{{ url_for('static', filename='images/banner.png') }}" alt="Beatpax Platform">
+            </div>
+        </div>
+
+        <div class="hero-wave"></div>
+    </section>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar fade-in">
+        <div class="stat-item">
+            <div class="stat-number">1000+</div>
+            <div class="stat-label">Beats</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Creators</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">200+</div>
+            <div class="stat-label">Sound Pax</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">50K+</div>
+            <div class="stat-label">Downloads</div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="section" id="features">
+        <div class="section-header fade-in">
+            <div class="section-label">Features</div>
+            <h2 class="section-title">Everything you need to build your sound</h2>
+            <p class="section-subtitle">From discovery to collaboration, Beatpax gives producers the tools to create, share, and grow.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="compass"></i>
+                </div>
+                <h3 class="feature-title">Explore</h3>
+                <p class="feature-desc">Browse a growing library of beats and sound pax across every genre. Filter by BPM, key, and mood to find your perfect sound.</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="layers"></i>
+                </div>
+                <h3 class="feature-title">Curate</h3>
+                <p class="feature-desc">Build curated collections from any beats on the platform. Organize your favorites and share playlists with collaborators.</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="git-branch"></i>
+                </div>
+                <h3 class="feature-title">Stems</h3>
+                <p class="feature-desc">Upload and share individual stem tracks for real collaboration. Let others build on your work or remix with full stems access.</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="upload-cloud"></i>
+                </div>
+                <h3 class="feature-title">Upload</h3>
+                <p class="feature-desc">Share your beats with the world. Upload tracks, set pricing in tokens, and start building your producer profile.</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="wallet"></i>
+                </div>
+                <h3 class="feature-title">Token Economy</h3>
+                <p class="feature-desc">Buy and sell beats with tokens. A simple, transparent marketplace that puts creators first and keeps things fair.</p>
+            </div>
+
+            <div class="feature-card fade-in">
+                <div class="feature-icon">
+                    <i data-lucide="share-2"></i>
+                </div>
+                <h3 class="feature-title">Share</h3>
+                <p class="feature-desc">Generate shareable links for your pax and curated collections. Let anyone preview your work with a beautiful public player.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section" id="how-it-works">
+        <div class="section-header fade-in">
+            <div class="section-label">How It Works</div>
+            <h2 class="section-title">Start in minutes, not hours</h2>
+            <p class="section-subtitle">Getting started with Beatpax is simple. Sign up and dive right in.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card fade-in">
+                <div class="step-number">1</div>
+                <h3 class="step-title">Create Your Account</h3>
+                <p class="step-desc">Sign up for free and get bonus tokens to start exploring the marketplace right away.</p>
+            </div>
+
+            <div class="step-card fade-in">
+                <div class="step-number">2</div>
+                <h3 class="step-title">Explore & Upload</h3>
+                <p class="step-desc">Browse beats from other creators or upload your own tracks and sound pax to start sharing.</p>
+            </div>
+
+            <div class="step-card fade-in">
+                <div class="step-number">3</div>
+                <h3 class="step-title">Collaborate & Grow</h3>
+                <p class="step-desc">Curate collections, share stems, and connect with producers to build something great together.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Creators Section -->
+    <section class="section" id="creators">
+        <div class="section-header fade-in">
+            <div class="section-label">For Creators</div>
+            <h2 class="section-title">Built for producers, by producers</h2>
+            <p class="section-subtitle">Every feature is designed with your workflow in mind.</p>
+        </div>
+
+        <div class="showcase-grid">
+            <div class="showcase-card fade-in">
+                <div class="showcase-icon">
+                    <i data-lucide="headphones"></i>
+                </div>
+                <div>
+                    <h3 class="showcase-title">Instant Playback</h3>
+                    <p class="showcase-desc">Stream any beat instantly with our built-in player. No downloads needed to preview tracks.</p>
+                </div>
+            </div>
+
+            <div class="showcase-card fade-in">
+                <div class="showcase-icon">
+                    <i data-lucide="heart"></i>
+                </div>
+                <div>
+                    <h3 class="showcase-title">Like & Save</h3>
+                    <p class="showcase-desc">Heart the tracks you love and build a personal library of your favorite sounds.</p>
+                </div>
+            </div>
+
+            <div class="showcase-card fade-in">
+                <div class="showcase-icon">
+                    <i data-lucide="music"></i>
+                </div>
+                <div>
+                    <h3 class="showcase-title">Genre Browsing</h3>
+                    <p class="showcase-desc">Filter beats by genre, BPM, and key to find exactly what fits your project.</p>
+                </div>
+            </div>
+
+            <div class="showcase-card fade-in">
+                <div class="showcase-icon">
+                    <i data-lucide="link"></i>
+                </div>
+                <div>
+                    <h3 class="showcase-title">Shareable Links</h3>
+                    <p class="showcase-desc">Every sound pax gets a public share page. Send it to anyone, no account required to listen.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <h2 class="cta-title fade-in">Ready to find your next beat?</h2>
+        <p class="cta-subtitle fade-in">Join Beatpax today and get free tokens to start exploring the marketplace.</p>
+        <div class="cta-actions fade-in">
+            <a href="/register" class="btn-primary">
+                Get Started Free
+                <i data-lucide="arrow-right"></i>
+            </a>
+            <a href="/login" class="btn-secondary">
+                I Already Have an Account
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-left">
+            <img src="{{ url_for('static', filename='images/beatpax-logo.png') }}" alt="Beatpax">
+            <span>&copy; 2025 Beatpax. All rights reserved.</span>
+        </div>
+        <div class="footer-links">
+            <a href="/login">Log In</a>
+            <a href="/register">Sign Up</a>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Scroll-triggered fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Navbar background on scroll
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.style.background = 'rgba(0, 0, 0, 0.85)';
+                navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.08)';
+            } else {
+                navbar.style.background = 'rgba(0, 0, 0, 0.6)';
+                navbar.style.borderBottomColor = 'rgba(255, 255, 255, 0.05)';
+            }
+        });
+    </script>
+</body>
+</html>

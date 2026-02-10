@@ -328,9 +328,10 @@ def generate_share_code():
 # =============================================================================
 
 @app.route('/')
-@login_required
 def beatpax():
-    """Main Beatpax catalog page"""
+    """Landing page for guests, main app for authenticated users"""
+    if not session.get('authenticated'):
+        return render_template('landing.html')
     user_id = session.get('user_id')
     wallet = get_or_create_wallet(user_id)
     return render_template('beatpax.html', wallet_balance=wallet.balance)
